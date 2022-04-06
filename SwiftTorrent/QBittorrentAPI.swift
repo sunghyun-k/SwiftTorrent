@@ -38,6 +38,10 @@ class QBittorrentFetcher {
             case unknown
         }
     }
+}
+
+// MARK: - Auth
+extension QBittorrentFetcher {
     /// 기존 로그인 정보를 쿠키에 저장한다.
     func setSID(_ sid: String) {
         let cookie = HTTPCookie(properties: [
@@ -68,17 +72,20 @@ class QBittorrentFetcher {
         }
         setSID(sidString[1])
     }
+}
     
-    private enum InternalError: Error {
+private extension QBittorrentFetcher {
+    // MARK: Private
+    enum InternalError: Error {
         case server(statusCode: Int)
     }
-    private func data(for components: URLComponents) async throws -> (Data, HTTPURLResponse) {
+    func data(for components: URLComponents) async throws -> (Data, HTTPURLResponse) {
         guard let url = components.url else {
             throw FetcherError.network(description: "Couldn't create URL")
         }
         let (data, response) = try await session.data(from: url)
         guard let response = response.httpResponse else {
-            throw FetcherError.network(description: "Couldn't get HTTP Response")
+            throw FetcherError.network(description: "Couldn't get HTTP response")
         }
         guard response.statusCode == 200 else {
             throw InternalError.server(statusCode: response.statusCode)

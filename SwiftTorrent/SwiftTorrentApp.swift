@@ -9,9 +9,11 @@ import SwiftUI
 
 @main
 struct SwiftTorrentApp: App {
+    @StateObject private var fetcher = QBittorrentFetcher(host: "127.0.0.1", port: 8080)
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LoginView()
+                .environmentObject(fetcher)
         }
     }
 }

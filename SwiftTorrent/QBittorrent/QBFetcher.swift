@@ -63,8 +63,8 @@ extension QBFetcher: TorrentFetchProtocol {
     }
     
     // MARK: - Torrents
-    func torrentsInfo() async -> Result<[TorrentProtocol], FetcherError> {
-        let components = makeTorrentsInfoComponents()
+    func fetchTorrentList() async -> Result<[TorrentProtocol], FetcherError> {
+        let components = makeTorrentListComponents()
         let data: Data
         do {
             (data, _) = try await getData(for: components)
@@ -78,6 +78,7 @@ extension QBFetcher: TorrentFetchProtocol {
         do {
             torrents = try await decoder.decode(data)
         } catch let error {
+            print(error)
             return .failure(.parsing(description: error.localizedDescription))
         }
         return .success(torrents.map(QBTorrent.init))
@@ -138,7 +139,7 @@ private extension QBFetcher {
         return components
     }
     // MARK: - Torrents
-    func makeTorrentsInfoComponents() -> URLComponents {
+    func makeTorrentListComponents() -> URLComponents {
         var components = URLComponents()
         components.scheme = Components.scheme
         components.host = host

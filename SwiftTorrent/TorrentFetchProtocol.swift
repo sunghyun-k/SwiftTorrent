@@ -59,6 +59,6 @@ protocol TorrentFetchProtocol {
         password: String
     ) async -> Result<Void, LoginError>
     
-    func torrentsInfo() async -> Result<[TorrentProtocol], FetcherError>
+    func fetchTorrentList() async -> Result<[TorrentProtocol], FetcherError>
     
 }

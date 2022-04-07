@@ -15,7 +15,7 @@ struct SwiftTorrentApp: App {
     }()
     var body: some Scene {
         WindowGroup {
-            LoginView()
+            TorrentList()
                 .environmentObject(manager)
         }
     }

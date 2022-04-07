@@ -80,12 +80,13 @@ struct QBTorrentResponse: Decodable {
     let hash: String
     let lastActivity: Date
     let magnetURI: String
-    let maxRatio, maxSeedingTime: Int
+    let maxRatio: Float
+    let maxSeedingTime: Int
     let name: String
     let numComplete, numIncomplete, numLeechs, numSeeds: Int
     let priority: Int
     let progress: Float
-    let ratio, ratioLimit: Int
+    let ratio, ratioLimit: Float
     let savePath: String
     let seedingTime, seedingTimeLimit: Int
     let seenComplete: Date

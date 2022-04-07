@@ -8,8 +8,10 @@
 import Foundation
 import Combine
 
+@MainActor
 class TorrentManager: ObservableObject {
-    @Published var downloadList: [TorrentProtocol] = []
+    @Published var torrents: [TorrentProtocol] = []
+    @Published var isNotLoggedIn: Bool = true
     
     private let fetcher: TorrentFetchProtocol
     private var disposables = Set<AnyCancellable>()
@@ -18,11 +20,25 @@ class TorrentManager: ObservableObject {
         self.fetcher = fetcher
     }
     
-    enum LoginState {
-        case success
-        case fail
-    }
     func login(username: String, password: String) async -> Result<Void, LoginError> {
-        await fetcher.login(username: username, password: password)
+        let result = await fetcher.login(username: username, password: password)
+        switch result {
+        case .success(_): isNotLoggedIn = false
+        case .failure(_): isNotLoggedIn = true
+        }
+        return result
+    }
+    
+    func fetchTorrents() {
+        Task {
+            let result = await fetcher.fetchTorrentList()
+            switch result {
+            case .success(let torrents):
+                self.torrents = torrents
+            case .failure(let error):
+                self.torrents = []
+            }
+        }
+        
     }
 }

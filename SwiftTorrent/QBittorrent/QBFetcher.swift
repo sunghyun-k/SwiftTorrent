@@ -7,7 +7,7 @@
 
 import Foundation
 
-class QBittorrentFetcher {
+class QBFetcher {
     private let session: URLSession
     private let cookieStorage: HTTPCookieStorage
     private let decoder = Decoder()
@@ -32,7 +32,7 @@ class QBittorrentFetcher {
     }
 }
 
-extension QBittorrentFetcher: TorrentFetchProtocol {
+extension QBFetcher: TorrentFetchProtocol {
     // MARK: - Auth
     func login(username: String, password: String) async -> Result<Void, LoginError> {
         let components = makeLoginComponents(username: username, password: password)
@@ -45,9 +45,7 @@ extension QBittorrentFetcher: TorrentFetchProtocol {
             case 403: return .failure(.bannedIP)
             default: return .failure(.unknown(description: nil))
             }
-        } catch {
-            return .failure(.unknown(description: nil))
-        }
+        } catch { return .failure(.unknown(description: nil)) }
         guard
             let result = String(data: data, encoding: .utf8),
             result == "Ok." else {
@@ -64,13 +62,30 @@ extension QBittorrentFetcher: TorrentFetchProtocol {
         return .success(())
     }
     
-    func torrentList() async -> Result<[TorrentProtocol], FetcherError> {
-        fatalError()
+    // MARK: - Torrents
+    func torrentsInfo() async -> Result<[TorrentProtocol], FetcherError> {
+        let components = makeTorrentsInfoComponents()
+        let data: Data
+        do {
+            (data, _) = try await getData(for: components)
+        } catch InternalError.server(statusCode: let code) {
+            switch code {
+            case 403: return .failure(.unauthorized)
+            default: return .failure(.unknown(description: nil))
+            }
+        } catch { return .failure(.unknown(description: nil)) }
+        let torrents: [QBTorrentResponse]
+        do {
+            torrents = try await decoder.decode(data)
+        } catch let error {
+            return .failure(.parsing(description: error.localizedDescription))
+        }
+        return .success(torrents.map(QBTorrent.init))
     }
 }
 
 // MARK: - Private
-private extension QBittorrentFetcher {
+private extension QBFetcher {
     /// QBittorrentFetcher 내부에서만 사용. 외부에서 확인할 수 있는 오류로 변환이 필요하다.
     enum InternalError: Error {
         case server(statusCode: Int)
@@ -96,25 +111,39 @@ private extension QBittorrentFetcher {
 }
 
 // MARK: - qBittorrent API
-private extension QBittorrentFetcher {
-    struct Paths {
+private extension QBFetcher {
+    struct Components {
+        static let scheme = "http"
         static let api = "/api/v2"
         struct Auth {
-            private static let apiName = Paths.api + "/auth"
+            private static let apiName = Components.api + "/auth"
             static let login = apiName + "/login"
         }
+        struct Torrents {
+            private static let apiName = Components.api + "/torrents"
+            static let info = apiName + "/info"
+        }
     }
-    
+    // MARK: - Auth
     func makeLoginComponents(username: String, password: String) -> URLComponents {
         var components = URLComponents()
-        components.scheme = "http"
+        components.scheme = Components.scheme
         components.host = host
         components.port = port
-        components.path = Paths.Auth.login
+        components.path = Components.Auth.login
         components.queryItems = [
             .init(name: "username", value: username),
             .init(name: "password", value: password)
         ]
+        return components
+    }
+    // MARK: - Torrents
+    func makeTorrentsInfoComponents() -> URLComponents {
+        var components = URLComponents()
+        components.scheme = Components.scheme
+        components.host = host
+        components.port = port
+        components.path = Components.Torrents.info
         return components
     }
 }

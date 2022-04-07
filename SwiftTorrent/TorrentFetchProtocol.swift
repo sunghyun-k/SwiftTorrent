@@ -17,6 +17,7 @@ enum FetcherError: Error {
     case parsing(description: String)
     case unauthorized
     case notFound
+    case unknown(description: String?)
 }
 enum TorrentState {
     case error
@@ -29,16 +30,22 @@ enum TorrentState {
 }
 protocol TorrentProtocol {
     var addedOn: Date { get }
+    /// bytes
     var amountLeft: Int { get }
+    /// bytes
     var completed: Int { get }
-    var completionOn: Int { get }
+    var completionOn: Date { get }
+    /// bytes/s
     var downloadSpeed: Int { get }
     var eta: TimeInterval { get }
     var id: String { get }
     var name: String { get }
+    /// percentage/100
     var progress: Float { get }
+    /// bytes
     var size: Int { get }
     var state: TorrentState { get }
+    /// bytes/s
     var uploadSpeed: Int { get }
 }
 
@@ -52,6 +59,6 @@ protocol TorrentFetchProtocol {
         password: String
     ) async -> Result<Void, LoginError>
     
-    func torrentList() async -> Result<[TorrentProtocol], FetcherError>
+    func torrentsInfo() async -> Result<[TorrentProtocol], FetcherError>
     
 }

@@ -7,27 +7,88 @@
 
 import Foundation
 
-struct QBTorrent: Decodable {
-    let addedOn, amountLeft: Int
+struct QBTorrent {
+    private let data: QBTorrentResponse
+    init(_ data: QBTorrentResponse) {
+        self.data = data
+    }
+}
+
+extension QBTorrent: TorrentProtocol {
+    var addedOn: Date {
+        data.addedOn
+    }
+    
+    var amountLeft: Int {
+        data.amountLeft
+    }
+    
+    var completed: Int {
+        data.completed
+    }
+    
+    var completionOn: Date {
+        data.completionOn
+    }
+    
+    var downloadSpeed: Int {
+        data.dlspeed
+    }
+    
+    var eta: TimeInterval {
+        TimeInterval(data.eta)
+    }
+    
+    var id: String {
+        data.hash
+    }
+    
+    var name: String {
+        data.name
+    }
+    
+    var progress: Float {
+        data.progress
+    }
+    
+    var size: Int {
+        data.size
+    }
+    
+    var state: TorrentState {
+        .error
+    }
+    
+    var uploadSpeed: Int {
+        data.upspeed
+    }
+    
+}
+
+struct QBTorrentResponse: Decodable {
+    let addedOn: Date
+    let amountLeft: Int
     let autoTmm: Bool
     let availability: Double
     let category: String
-    let completed, completionOn: Int
+    let completed: Int
+    let completionOn: Date
     let contentPath: String
     let dlLimit, dlspeed, downloaded, downloadedSession: Int
     let eta: Int
     let fLPiecePrio, forceStart: Bool
     let hash: String
-    let lastActivity: Int
+    let lastActivity: Date
     let magnetURI: String
     let maxRatio, maxSeedingTime: Int
     let name: String
     let numComplete, numIncomplete, numLeechs, numSeeds: Int
     let priority: Int
-    let progress: Double
+    let progress: Float
     let ratio, ratioLimit: Int
     let savePath: String
-    let seedingTime, seedingTimeLimit, seenComplete: Int
+    let seedingTime, seedingTimeLimit: Int
+    let seenComplete: Date
     let seqDL: Bool
     let size: Int
     let state: String

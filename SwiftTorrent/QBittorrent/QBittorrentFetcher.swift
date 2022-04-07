@@ -7,7 +7,7 @@
 
 import Foundation
 
-class QBittorrentFetcher: ObservableObject {
+class QBittorrentFetcher {
     private let session: URLSession
     private let cookieStorage: HTTPCookieStorage
     private let decoder = Decoder()
@@ -30,23 +30,12 @@ class QBittorrentFetcher: ObservableObject {
         config.httpCookieStorage = cookieStorage
         self.session = URLSession(configuration: config)
     }
-    
-    enum FetcherError: Error {
-        case network(description: String)
-        case parsing(description: String)
-        
-        enum Login: Error {
-            case bannedIP
-            case wrongUsernameOrPassword
-            case unknown
-            case alreadyLogedIn
-        }
-    }
 }
 
 // MARK: - Auth
-extension QBittorrentFetcher {
-    func login(username: String, password: String) async throws {
+extension QBittorrentFetcher: TorrentFetchProtocol {
+    
+    func login(username: String, password: String) async -> Result<Void, LoginError> {
         let components = makeLoginComponents(username: username, password: password)
         let data: Data
         let response: HTTPURLResponse
@@ -54,25 +43,30 @@ extension QBittorrentFetcher {
             (data, response) = try await getData(for: components)
         } catch InternalError.server(statusCode: let code) {
             switch code {
-            case 403:
-                throw FetcherError.Login.bannedIP
-            default:
-                throw FetcherError.Login.unknown
+            case 403: return .failure(.bannedIP)
+            default: return .failure(.unknown(description: nil))
             }
+        } catch {
+            return .failure(.unknown(description: nil))
         }
         guard
             let result = String(data: data, encoding: .utf8),
             result == "Ok." else {
-            throw FetcherError.Login.wrongUsernameOrPassword
+            return .failure(.wrongInfo)
         }
         guard
             let cookie = response.value(forHTTPHeaderField: "set-cookie"),
             let sidString = cookie.components(separatedBy: ";").first?
                 .components(separatedBy: "="),
             sidString.count == 2 else {
-            throw FetcherError.Login.alreadyLogedIn
+            return .success(())
         }
         sid = sidString[1]
+        return .success(())
+    }
+    
+    func torrentList() async -> Result<[TorrentProtocol], FetcherError> {
+        fatalError()
     }
 }
 

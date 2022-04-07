@@ -22,7 +22,7 @@ class TorrentManager: ObservableObject {
         case success
         case fail
     }
-    func login(username: String, password: String) async -> Void {
-        
+    func login(username: String, password: String) async -> Result<Void, LoginError> {
+        await fetcher.login(username: username, password: password)
     }
 }

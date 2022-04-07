@@ -32,9 +32,8 @@ class QBittorrentFetcher {
     }
 }
 
-// MARK: - Auth
 extension QBittorrentFetcher: TorrentFetchProtocol {
-    
+    // MARK: - Auth
     func login(username: String, password: String) async -> Result<Void, LoginError> {
         let components = makeLoginComponents(username: username, password: password)
         let data: Data

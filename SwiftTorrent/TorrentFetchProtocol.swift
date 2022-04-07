@@ -45,6 +45,7 @@ protocol TorrentProtocol {
 protocol TorrentFetchProtocol {
     var host: String { get set }
     var port: Int? { get set }
+    var sid: String? { get set }
     
     func login(
         username: String,

@@ -11,7 +11,8 @@ import SwiftUI
 struct SwiftTorrentApp: App {
     @StateObject private var manager: TorrentManager = {
         let fetcher = QBFetcher(host: "127.0.0.1", port: 8080)
-        return TorrentManager(fetcher: fetcher)
+        let manager = TorrentManager(fetcher: fetcher)
+        return manager
     }()
     var body: some Scene {
         WindowGroup {

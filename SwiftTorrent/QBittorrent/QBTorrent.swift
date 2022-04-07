@@ -92,7 +92,7 @@ struct QBTorrentResponse: Decodable {
     let seenComplete: Date
     let seqDL: Bool
     let size: Int
-    let state: String
+    let state: State
     let superSeeding: Bool
     let tags: String
     let timeActive, totalSize: Int
@@ -141,5 +141,27 @@ struct QBTorrentResponse: Decodable {
         case uploaded
         case uploadedSession = "uploaded_session"
         case upspeed
+    }
+    
+    enum State: String, Decodable {
+        case error
+        case missingFiles
+        case uploading
+        case pausedUP
+        case queuedUP
+        case stalledUP
+        case checkingUP
+        case forcedUP
+        case allocating
+        case downloading
+        case metaDL
+        case pausedDL
+        case queuedDL
+        case stalledDL
+        case checkingDL
+        case forcedDL
+        case checkingResumeData
+        case moving
+        case unknown
     }
 }

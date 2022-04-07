@@ -12,10 +12,13 @@ struct TorrentRow: View {
     var body: some View {
         HStack {
             Image(systemName: "doc.fill")
-            VStack {
+            VStack(alignment: .leading) {
                 Text(torrent.name)
+                    .lineLimit(1)
                 Text("\(torrent.size) Bytes")
+                    .font(.system(size: 10))
             }
+            Spacer()
             Image(systemName: "magnifyingglass")
         }
     }

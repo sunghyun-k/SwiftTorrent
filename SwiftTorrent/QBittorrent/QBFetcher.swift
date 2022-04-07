@@ -9,7 +9,6 @@ import Foundation
 
 class QBFetcher {
     private let session: URLSession
-    private let cookieStorage: HTTPCookieStorage
     private let decoder = Decoder()
     
     var host: String
@@ -23,11 +22,9 @@ class QBFetcher {
     ) {
         self.host = host
         self.port = port
-        self.cookieStorage = HTTPCookieStorage()
         
         let config = URLSessionConfiguration.default
         config.httpCookieAcceptPolicy = .never
-        config.httpCookieStorage = cookieStorage
         self.session = URLSession(configuration: config)
     }
 }
@@ -45,7 +42,9 @@ extension QBFetcher: TorrentFetchProtocol {
             case 403: return .failure(.bannedIP)
             default: return .failure(.unknown(description: nil))
             }
-        } catch { return .failure(.unknown(description: nil)) }
+        } catch let error {
+            return .failure(.unknown(description: error.localizedDescription))
+        }
         guard
             let result = String(data: data, encoding: .utf8),
             result == "Ok." else {

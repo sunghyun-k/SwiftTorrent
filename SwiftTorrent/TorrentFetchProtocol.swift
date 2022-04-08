@@ -10,6 +10,7 @@ import Foundation
 enum LoginError: Error {
     case bannedIP
     case wrongInfo
+    case network(description: String)
     case unknown(description: String?)
 }
 enum FetcherError: Error {
@@ -17,6 +18,7 @@ enum FetcherError: Error {
     case parsing(description: String)
     case unauthorized
     case notFound
+    case notValid
     case unknown(description: String?)
 }
 enum TorrentState {
@@ -28,7 +30,7 @@ enum TorrentState {
     case downloading
     case paused
 }
-protocol TorrentProtocol {
+protocol TorrentProtocol: AnyObject {
     var addedOn: Date { get }
     /// bytes
     var amountLeft: Int { get }
@@ -49,7 +51,7 @@ protocol TorrentProtocol {
     var uploadSpeed: Int { get }
 }
 
-protocol TorrentFetchProtocol {
+protocol TorrentFetchProtocol: AnyObject {
     var host: String { get set }
     var port: Int? { get set }
     var sid: String? { get set }
@@ -60,5 +62,7 @@ protocol TorrentFetchProtocol {
     ) async -> Result<Void, LoginError>
     
     func fetchTorrentList() async -> Result<[TorrentProtocol], FetcherError>
-    
+    func pause(torrents: [String])
+    func resume(torrents: [String])
+    func delete(torrents: [String])
 }

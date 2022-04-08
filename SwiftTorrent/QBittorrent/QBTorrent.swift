@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct QBTorrent {
+class QBTorrent {
     private let data: QBTorrentResponse
     init(_ data: QBTorrentResponse) {
         self.data = data

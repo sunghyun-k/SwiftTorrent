@@ -32,47 +32,56 @@ class QBFetcher {
 extension QBFetcher: TorrentFetchProtocol {
     // MARK: - Auth
     func login(username: String, password: String) async -> Result<Void, LoginError> {
-        let components = makeLoginComponents(username: username, password: password)
+        guard let url = makeLoginComponents(username: username, password: password).url else {
+            return .failure(.network(description: "Cannot create url."))
+        }
         let data: Data
         let response: HTTPURLResponse
         do {
-            (data, response) = try await getData(for: components)
-        } catch InternalError.server(statusCode: let code) {
-            switch code {
-            case 403: return .failure(.bannedIP)
-            default: return .failure(.unknown(description: nil))
-            }
+            (data, response) = try await getData(from: url)
         } catch let error {
-            return .failure(.unknown(description: error.localizedDescription))
+            return .failure(.network(description: error.localizedDescription))
         }
-        guard
-            let result = String(data: data, encoding: .utf8),
-            result == "Ok." else {
+        guard response.statusCode == 200 else {
+            if response.statusCode == 403 {
+                return .failure(.bannedIP)
+            } else {
+                return .failure(.unknown(description: nil))
+            }
+        }
+        
+        guard let result = String(data: data, encoding: .utf8),
+              result == "Ok." else {
             return .failure(.wrongInfo)
         }
-        guard
-            let cookie = response.value(forHTTPHeaderField: "set-cookie"),
-            let sidString = cookie.components(separatedBy: ";").first?
-                .components(separatedBy: "="),
-            sidString.count == 2 else {
-            return .success(())
+        if let cookie = response.value(forHTTPHeaderField: "set-cookie"),
+           let sidString = cookie.components(separatedBy: ";").first?
+            .components(separatedBy: "="),
+           sidString.count == 2 {
+            sid = sidString[1]
         }
-        sid = sidString[1]
         return .success(())
     }
     
     // MARK: - Torrents
     func fetchTorrentList() async -> Result<[TorrentProtocol], FetcherError> {
-        let components = makeTorrentListComponents()
+        guard let url = makeTorrentListComponents().url else {
+            return .failure(.network(description: "Cannot create url"))
+        }
         let data: Data
+        let response: HTTPURLResponse
         do {
-            (data, _) = try await getData(for: components)
-        } catch InternalError.server(statusCode: let code) {
-            switch code {
-            case 403: return .failure(.unauthorized)
-            default: return .failure(.unknown(description: nil))
+            (data, response) = try await getData(from: url)
+        } catch let error {
+            return .failure(.network(description: error.localizedDescription))
+        }
+        guard response.statusCode == 200 else {
+            if response.statusCode == 403 {
+                return .failure(.unauthorized)
+            } else {
+                return .failure(.unknown(description: nil))
             }
-        } catch { return .failure(.network(description: error.localizedDescription)) }
+        }
         let torrents: [QBTorrentResponse]
         do {
             torrents = try await decoder.decode(data)
@@ -82,31 +91,62 @@ extension QBFetcher: TorrentFetchProtocol {
         }
         return .success(torrents.map(QBTorrent.init))
     }
+    func pause(torrents: [String]) {
+        guard let url = makePauseTorrentsComponents(torrentIDs: torrents).url else {
+            return
+        }
+        Task {
+            do {
+                _ = try await getData(from: url)
+            } catch {
+                return
+            }
+        }
+    }
+    func resume(torrents: [String]) {
+        guard let url = makeResumeTorrentsComponents(torrentIDs: torrents).url else {
+            return
+        }
+        Task {
+            do {
+                _ = try await getData(from: url)
+            } catch {
+                return
+            }
+        }
+    }
+    func delete(torrents: [String]) {
+        guard let url = makeDeleteTorrentsComponents(torrentIDs: torrents).url else {
+            return
+        }
+        Task {
+            do {
+                _ = try await getData(from: url)
+            } catch {
+                return
+            }
+        }
+    }
 }
 
 // MARK: - Private
 private extension QBFetcher {
-    /// QBittorrentFetcher 내부에서만 사용. 외부에서 확인할 수 있는 오류로 변환이 필요하다.
-    enum InternalError: Error {
-        case server(statusCode: Int)
-    }
-    /// URLSession 오류 및 Status Code 200 제외 나머지 응답을 오류로 변환한다.
-    func getData(for components: URLComponents) async throws -> (Data, HTTPURLResponse) {
-        guard let url = components.url else {
-            throw FetcherError.network(description: "Couldn't create URL")
-        }
+    
+    func getData(from url: URL) async throws -> (Data, HTTPURLResponse) {
+        print(url.absoluteString)
         var request = URLRequest(url: url)
         if let sid = sid {
             request.addValue("SID=\(sid)", forHTTPHeaderField: "Cookie")
         }
         let (data, response) = try await session.data(for: request)
-        guard let response = response.httpResponse else {
+        guard let response = response as? HTTPURLResponse else {
             throw FetcherError.network(description: "Couldn't get HTTP response")
         }
-        guard response.statusCode == 200 else {
-            throw InternalError.server(statusCode: response.statusCode)
-        }
         return (data, response)
+    }
+    
+    func postData(_ data: Data, to url: URL) async throws -> HTTPURLResponse {
+        
     }
 }
 
@@ -122,8 +162,13 @@ private extension QBFetcher {
         struct Torrents {
             private static let apiName = Components.api + "/torrents"
             static let info = apiName + "/info"
+            static let pause = apiName + "/pause"
+            static let resume = apiName + "/resume"
+            static let delete = apiName + "/delete"
+            static let add = apiName + "/add"
         }
     }
+    
     // MARK: - Auth
     func makeLoginComponents(username: String, password: String) -> URLComponents {
         var components = URLComponents()
@@ -146,10 +191,27 @@ private extension QBFetcher {
         components.path = Components.Torrents.info
         return components
     }
-}
-
-extension URLResponse {
-    var httpResponse: HTTPURLResponse? {
-        self as? HTTPURLResponse
+    
+    func makeManageTorrentsComponents(path: String, torrentIDs: [String]) -> URLComponents {
+        var components = URLComponents()
+        components.scheme = Components.scheme
+        components.host = host
+        components.port = port
+        components.path = path
+        let torrents = torrentIDs.joined(separator: "|")
+        components.queryItems = [
+            .init(name: "hashes", value: torrents)
+        ]
+        return components
     }
+    func makePauseTorrentsComponents(torrentIDs: [String]) -> URLComponents {
+        makeManageTorrentsComponents(path: Components.Torrents.pause, torrentIDs: torrentIDs)
+    }
+    func makeResumeTorrentsComponents(torrentIDs: [String]) -> URLComponents {
+        makeManageTorrentsComponents(path: Components.Torrents.resume, torrentIDs: torrentIDs)
+    }
+    func makeDeleteTorrentsComponents(torrentIDs: [String]) -> URLComponents {
+        makeManageTorrentsComponents(path: Components.Torrents.delete, torrentIDs: torrentIDs)
+    }
+    
 }

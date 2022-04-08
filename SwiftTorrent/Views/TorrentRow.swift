@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct TorrentRow: View {
+    @EnvironmentObject var manager: TorrentManager
     let torrent: TorrentProtocol
     var body: some View {
         HStack {
@@ -60,17 +61,20 @@ struct TorrentRow: View {
                 .frame(height: 20)
             }
             Spacer(minLength: 20)
-            switch torrent.state {
-            case .paused, .finished:
-                Image(systemName: "play.fill")
-                    .frame(width: 12)
-            case .downloading, .uploading, .checking:
-                Image(systemName: "pause.fill")
-                    .frame(width: 12)
-            default:
-                Spacer()
-                    .frame(width: 12)
+            Button {
+                manager.pauseResume(torrent: torrent)
+            } label: {
+                switch torrent.state {
+                case .paused, .finished:
+                    Image(systemName: "play.fill")
+                case .downloading, .uploading, .checking:
+                    Image(systemName: "pause.fill")
+                default:
+                    Spacer()
+                }
             }
+            .buttonStyle(.plain)
+            .frame(width: 12)
         }
         .padding([.top, .bottom], 2)
     }

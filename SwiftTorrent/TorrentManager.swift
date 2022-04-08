@@ -58,4 +58,15 @@ class TorrentManager: ObservableObject {
         }
         
     }
+    
+    func pauseResume(torrent: TorrentProtocol) {
+        switch torrent.state {
+        case .paused, .finished:
+            fetcher.resume(torrents: [torrent.id])
+        case .downloading, .uploading, .checking:
+            fetcher.pause(torrents: [torrent.id])
+        default:
+            break
+        }
+    }
 }

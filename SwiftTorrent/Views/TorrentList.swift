@@ -14,6 +14,14 @@ struct TorrentList: View {
         List {
             ForEach(manager.torrents, id: \.id) { torrent in
                 TorrentRow(torrent: torrent)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button {
+                            manager.deleteTorrents([torrent])
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                        .tint(.red)
+                    }
             }
         }
         .listStyle(.plain)

@@ -11,6 +11,8 @@ class QBFetcher {
     private let session: URLSession
     private let decoder = Decoder()
     
+    private var isFetching = false
+    
     var host: String
     var port: Int?
     /// 기존 로그인 토큰
@@ -116,8 +118,8 @@ extension QBFetcher: TorrentFetchProtocol {
             }
         }
     }
-    func delete(torrents: [String]) {
-        guard let url = makeDeleteTorrentsComponents(torrentIDs: torrents).url else {
+    func delete(torrents: [String], deleteFiles: Bool) {
+        guard let url = makeDeleteTorrentsComponents(torrentIDs: torrents, deleteFiles: deleteFiles).url else {
             return
         }
         Task {
@@ -144,6 +146,11 @@ private extension QBFetcher {
     
     func getData(from url: URL) async throws -> (Data, HTTPURLResponse) {
         print(url.absoluteString)
+        guard !isFetching else {
+            throw FetcherError.network(description: "Fetching data.")
+        }
+        isFetching = true
+        defer { isFetching = false }
         var request = URLRequest(url: url)
         if let sid = sid {
             request.addValue("SID=\(sid)", forHTTPHeaderField: "Cookie")
@@ -153,10 +160,16 @@ private extension QBFetcher {
             throw FetcherError.network(description: "Couldn't get HTTP response")
         }
         return (data, response)
+        
     }
     
     func postData(_ data: Data, to url: URL) async throws -> (Data, HTTPURLResponse) {
         print(url.absoluteString)
+        guard !isFetching else {
+            throw FetcherError.network(description: "Fetching data.")
+        }
+        isFetching = true
+        defer { isFetching = false }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         if let sid = sid {
@@ -258,7 +271,9 @@ private extension QBFetcher {
     func makeResumeTorrentsComponents(torrentIDs: [String]) -> URLComponents {
         makeManageTorrentsComponents(path: Components.Torrents.resume, torrentIDs: torrentIDs)
     }
-    func makeDeleteTorrentsComponents(torrentIDs: [String]) -> URLComponents {
-        makeManageTorrentsComponents(path: Components.Torrents.delete, torrentIDs: torrentIDs)
+    func makeDeleteTorrentsComponents(torrentIDs: [String], deleteFiles: Bool) -> URLComponents {
+        var components = makeManageTorrentsComponents(path: Components.Torrents.delete, torrentIDs: torrentIDs)
+        components.queryItems?.append(.init(name: "deleteFiles", value: String(deleteFiles)))
+        return components
     }
 }

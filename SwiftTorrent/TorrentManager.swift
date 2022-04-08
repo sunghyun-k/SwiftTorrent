@@ -15,7 +15,7 @@ class TorrentManager: ObservableObject {
     
     private let fetcher: TorrentFetchProtocol
     
-    private let timer = Timer.TimerPublisher(interval: 1, runLoop: .main, mode: .default)
+    private let timer = Timer.TimerPublisher(interval: 1.5, runLoop: .main, mode: .default)
     private var cancellable: Cancellable?
     private var disposables = Set<AnyCancellable>()
     
@@ -34,6 +34,7 @@ class TorrentManager: ObservableObject {
         case .success:
             currentUser = username
             cancellable = timer.connect()
+            fetchTorrents()
         case .failure(_):
             currentUser = nil
             cancellable = nil
@@ -56,10 +57,9 @@ class TorrentManager: ObservableObject {
                 }
             }
         }
-        
     }
     
-    func pauseResume(torrent: TorrentProtocol) {
+    func pauseResumeTorrent(_ torrent: TorrentProtocol) {
         switch torrent.state {
         case .paused, .finished:
             fetcher.resume(torrents: [torrent.id])
@@ -68,5 +68,9 @@ class TorrentManager: ObservableObject {
         default:
             break
         }
+    }
+    
+    func deleteTorrents(_ torrents: [TorrentProtocol]) {
+        fetcher.delete(torrents: torrents.map { $0.id }, deleteFiles: false)
     }
 }

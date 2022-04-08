@@ -62,7 +62,7 @@ struct TorrentRow: View {
             }
             Spacer(minLength: 20)
             Button {
-                manager.pauseResume(torrent: torrent)
+                manager.pauseResumeTorrent(torrent)
             } label: {
                 switch torrent.state {
                 case .paused, .finished:

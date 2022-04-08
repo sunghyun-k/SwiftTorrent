@@ -30,7 +30,7 @@ enum TorrentState {
     case paused
     case unknown
 }
-protocol TorrentProtocol: AnyObject {
+protocol TorrentProtocol {
     var addedOn: Date { get }
     /// bytes
     var amountLeft: Int { get }
@@ -64,7 +64,7 @@ protocol TorrentFetchProtocol: AnyObject {
     func fetchTorrentList() async -> Result<[TorrentProtocol], FetcherError>
     func pause(torrents: [String])
     func resume(torrents: [String])
-    func delete(torrents: [String])
+    func delete(torrents: [String], deleteFiles: Bool)
     func addTorrents(fromFiles files: [Data]) async -> VoidResult<FetcherError>
     func addTorrents(fromURLs urls: [URL]) async -> VoidResult<FetcherError>
 }

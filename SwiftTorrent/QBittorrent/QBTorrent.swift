@@ -56,7 +56,22 @@ extension QBTorrent: TorrentProtocol {
     }
     
     var state: TorrentState {
-        .error
+        switch data.state {
+        case .checkingDL, .checkingUP, .checkingResumeData, .allocating, .metaDL:
+            return .checking
+        case .downloading, .forcedDL, .stalledDL:
+            return .downloading
+        case .error, .missingFiles:
+            return .error
+        case .pausedDL, .queuedDL:
+            return .paused
+        case .pausedUP:
+            return .finished
+        case .unknown, .moving:
+            return .unknown
+        case .uploading, .forcedUP, .stalledUP, .queuedUP:
+            return .uploading
+        }
     }
     
     var uploadSpeed: Int {

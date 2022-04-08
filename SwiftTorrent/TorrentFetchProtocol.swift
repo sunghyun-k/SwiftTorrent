@@ -23,12 +23,12 @@ enum FetcherError: Error {
 }
 enum TorrentState {
     case error
-    case missingFiles
     case uploading
     case finished
     case checking
     case downloading
     case paused
+    case unknown
 }
 protocol TorrentProtocol: AnyObject {
     var addedOn: Date { get }

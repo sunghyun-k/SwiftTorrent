@@ -16,7 +16,7 @@ struct SwiftTorrentApp: App {
     }()
     var body: some Scene {
         WindowGroup {
-            HomeView()
+            HostView()
                 .environmentObject(manager)
         }
     }

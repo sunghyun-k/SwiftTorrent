@@ -22,6 +22,7 @@ struct TorrentList: View {
                 TorrentRow(torrent: torrent)
             }
         }
+        .listStyle(.plain)
     }
 }
 

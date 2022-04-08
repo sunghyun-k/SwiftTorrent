@@ -10,8 +10,8 @@ import SwiftUI
 struct LoginView: View {
     @EnvironmentObject var manager: TorrentManager
     
-    @State private var username: String = ""
-    @State private var password: String = ""
+    @State private var username: String = "brm0821"
+    @State private var password: String = "ksh980821"
     
     enum Field: Hashable {
         case username, password

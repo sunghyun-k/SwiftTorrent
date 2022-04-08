@@ -18,4 +18,3 @@ class Decoder {
         return try decoder.decode(T.self, from: data)
     }
 }
-

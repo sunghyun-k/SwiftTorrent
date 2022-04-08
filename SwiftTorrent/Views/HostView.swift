@@ -1,5 +1,5 @@
 //
-//  HomeView.swift
+//  HostView.swift
 //  SwiftTorrent
 //
 //  Created by Sunghyun Kim on 2022/04/08.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct HomeView: View {
+struct HostView: View {
     @EnvironmentObject var manager: TorrentManager
     
     var body: some View {
@@ -21,6 +21,6 @@ struct HomeView: View {
 
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
-        HomeView()
+        HostView()
     }
 }

@@ -11,16 +11,68 @@ struct TorrentRow: View {
     let torrent: TorrentProtocol
     var body: some View {
         HStack {
-            Image(systemName: "doc.fill")
-            VStack(alignment: .leading) {
+            switch torrent.state {
+            case .downloading:
+                Image(systemName: "arrow.down.circle.fill")
+                    .foregroundColor(.blue)
+            case .uploading:
+                Image(systemName: "arrow.up.circle.fill")
+                    .foregroundColor(.green)
+            case .finished:
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.green)
+            case .paused:
+                Image(systemName: "pause.circle.fill")
+                    .foregroundColor(.orange)
+            case .checking:
+                Image(systemName: "gearshape.circle.fill")
+                    .foregroundColor(.blue)
+            case .error:
+                Image(systemName: "exclamationmark.circle.fill")
+                    .foregroundColor(.red)
+            case .unknown:
+                Image(systemName: "questionmark.circle.fill")
+                    .foregroundColor(.yellow)
+            }
+            VStack(alignment: .leading, spacing: 2) {
                 Text(torrent.name)
                     .lineLimit(1)
-                Text("\(torrent.size) Bytes")
-                    .font(.system(size: 10))
+                    .font(.system(size: 14))
+                VStack(alignment: .leading, spacing: 3) {
+                    if torrent.progress < 1 {
+                        ProgressView(value: torrent.progress)
+                            .tint({
+                                if torrent.state == .downloading {
+                                    return Color.accentColor
+                                }
+                                return Color.gray
+                            }())
+                    }
+                    switch torrent.state {
+                    case .finished, .uploading:
+                        Text("\(torrent.size.byteFormat)")
+                            .font(.system(size: 10))
+                    default:
+                        Text("\(torrent.completed.byteFormat)/\(torrent.size.byteFormat) (\(torrent.downloadSpeed.byteFormat)/s)")
+                            .font(.system(size: 10))
+                    }
+                }
+                .frame(height: 20)
             }
-            Spacer()
-            Image(systemName: "magnifyingglass")
+            Spacer(minLength: 20)
+            switch torrent.state {
+            case .paused, .finished:
+                Image(systemName: "play.fill")
+                    .frame(width: 12)
+            case .downloading, .uploading, .checking:
+                Image(systemName: "pause.fill")
+                    .frame(width: 12)
+            default:
+                Spacer()
+                    .frame(width: 12)
+            }
         }
+        .padding([.top, .bottom], 2)
     }
 }
 

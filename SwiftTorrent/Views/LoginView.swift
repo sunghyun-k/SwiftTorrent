@@ -64,7 +64,7 @@ struct LoginView: View {
         Task {
             let result = await manager.login(username: username, password: password)
             switch result {
-            case .success(_):
+            case .success:
                 break
             case .failure(let error):
                 switch error {
@@ -74,6 +74,8 @@ struct LoginView: View {
                     errorMessage = "Wrong username or password."
                 case .unknown(let description):
                     errorMessage = description ?? "Unknown error."
+                case .network(description: let description):
+                    errorMessage = description
                 }
             }
             isLoading = false

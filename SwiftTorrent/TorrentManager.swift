@@ -19,10 +19,10 @@ class TorrentManager: ObservableObject {
         self.fetcher = fetcher
     }
     
-    func login(username: String, password: String) async -> Result<Void, LoginError> {
+    func login(username: String, password: String) async -> VoidResult<LoginError> {
         let result = await fetcher.login(username: username, password: password)
         switch result {
-        case .success(_):
+        case .success:
             currentUser = username
             isConnected = true
         case .failure(_):
@@ -50,6 +50,8 @@ class TorrentManager: ObservableObject {
                     currentUser = nil
                     isConnected = false
                 case .unknown(let description):
+                    fatalError()
+                case .notValidTorrentFile(let description):
                     fatalError()
                 }
             }

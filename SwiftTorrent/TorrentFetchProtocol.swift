@@ -18,7 +18,7 @@ enum FetcherError: Error {
     case parsing(description: String)
     case unauthorized
     case notFound
-    case notValid
+    case notValidTorrentFile(description: String)
     case unknown(description: String?)
 }
 enum TorrentState {
@@ -59,10 +59,17 @@ protocol TorrentFetchProtocol: AnyObject {
     func login(
         username: String,
         password: String
-    ) async -> Result<Void, LoginError>
+    ) async -> VoidResult<LoginError>
     
     func fetchTorrentList() async -> Result<[TorrentProtocol], FetcherError>
     func pause(torrents: [String])
     func resume(torrents: [String])
     func delete(torrents: [String])
+    func addTorrents(fromFiles files: [Data]) async -> VoidResult<FetcherError>
+    func addTorrents(fromURLs urls: [URL]) async -> VoidResult<FetcherError>
+}
+
+enum VoidResult<Failure> where Failure: Error {
+    case success
+    case failure(Failure)
 }

@@ -6,15 +6,14 @@
 //
 
 import Foundation
-import Combine
 
 @MainActor
 class TorrentManager: ObservableObject {
     @Published var torrents: [TorrentProtocol] = []
-    @Published var isNotLoggedIn: Bool = true
+    @Published var currentUser: String?
+    @Published var isConnected: Bool = false
     
     private let fetcher: TorrentFetchProtocol
-    private var disposables = Set<AnyCancellable>()
     
     init(fetcher: TorrentFetchProtocol) {
         self.fetcher = fetcher
@@ -23,20 +22,36 @@ class TorrentManager: ObservableObject {
     func login(username: String, password: String) async -> Result<Void, LoginError> {
         let result = await fetcher.login(username: username, password: password)
         switch result {
-        case .success(_): isNotLoggedIn = false
-        case .failure(_): isNotLoggedIn = true
+        case .success(_):
+            currentUser = username
+            isConnected = true
+        case .failure(_):
+            currentUser = nil
         }
         return result
     }
     
     func fetchTorrents() {
+        guard isConnected else { return }
         Task {
             let result = await fetcher.fetchTorrentList()
             switch result {
             case .success(let torrents):
                 self.torrents = torrents
             case .failure(let error):
-                self.torrents = []
+                switch error {
+                case .network(_):
+                    isConnected = false
+                case .notFound:
+                    fatalError()
+                case .parsing(let description):
+                    fatalError()
+                case .unauthorized:
+                    currentUser = nil
+                    isConnected = false
+                case .unknown(let description):
+                    fatalError()
+                }
             }
         }
         

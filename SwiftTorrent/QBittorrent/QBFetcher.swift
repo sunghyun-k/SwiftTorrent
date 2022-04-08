@@ -72,7 +72,7 @@ extension QBFetcher: TorrentFetchProtocol {
             case 403: return .failure(.unauthorized)
             default: return .failure(.unknown(description: nil))
             }
-        } catch { return .failure(.unknown(description: nil)) }
+        } catch { return .failure(.network(description: error.localizedDescription)) }
         let torrents: [QBTorrentResponse]
         do {
             torrents = try await decoder.decode(data)

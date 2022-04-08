@@ -10,19 +10,16 @@ import SwiftUI
 struct LoginView: View {
     @EnvironmentObject var manager: TorrentManager
     
-    enum Field: Hashable {
-        case username
-        case password
-    }
-    
     @State private var username: String = ""
     @State private var password: String = ""
+    
+    enum Field: Hashable {
+        case username, password
+    }
     @FocusState private var focusedField: Field?
     
-    @State var isLoggingIn: Bool = false
+    @State var isLoading: Bool = false
     @State var errorMessage: String = ""
-    
-    @Environment(\.dismiss) var dismiss
     
     var body: some View {
         VStack(spacing: 10) {
@@ -50,25 +47,25 @@ struct LoginView: View {
                     .frame(maxWidth: .infinity, maxHeight: 35)
             }
             .buttonStyle(.borderedProminent)
-            .disabled(username.isEmpty || password.isEmpty)
-            Spacer()
-        }
-        .overlay {
-            if isLoggingIn {
-                ProgressView()
+            .disabled(username.isEmpty || password.isEmpty || isLoading)
+            .overlay {
+                if isLoading {
+                    ProgressView()
+                }
             }
+            Spacer()
         }
         .padding()
     }
     
     private func login() {
         errorMessage.removeAll()
-        isLoggingIn = true
+        isLoading = true
         Task {
             let result = await manager.login(username: username, password: password)
             switch result {
             case .success(_):
-                dismiss()
+                break
             case .failure(let error):
                 switch error {
                 case .bannedIP:
@@ -79,14 +76,8 @@ struct LoginView: View {
                     errorMessage = description ?? "Unknown error."
                 }
             }
-            isLoggingIn = false
+            isLoading = false
         }
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginView()
     }
 }
 
@@ -99,3 +90,11 @@ private extension View {
             .frame(maxWidth: .infinity, maxHeight: 40)
     }
 }
+
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        LoginView()
+//    }
+//}
+
+

@@ -17,14 +17,10 @@ struct TorrentList: View {
             } label: {
                 Text("Refresh")
             }
-
+            
             ForEach(manager.torrents, id: \.id) { torrent in
                 TorrentRow(torrent: torrent)
             }
-        }
-        .sheet(isPresented: $manager.isNotLoggedIn) {
-            LoginView()
-                .environmentObject(manager)
         }
     }
 }

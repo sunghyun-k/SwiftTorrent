@@ -20,6 +20,7 @@
 		F2B954E327FEF8DB00173D7C /* TorrentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B954E227FEF8DB00173D7C /* TorrentRow.swift */; };
 		F2B954E527FEF94000173D7C /* torrentList.json in Sources */ = {isa = PBXBuildFile; fileRef = F2B954E427FEF94000173D7C /* torrentList.json */; };
 		F2B954E727FEFBDB00173D7C /* Samples.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B954E627FEFBDB00173D7C /* Samples.swift */; };
+		F2ED79A827FFB54F008B7B1E /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ED79A727FFB54F008B7B1E /* HomeView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,6 +38,7 @@
 		F2B954E227FEF8DB00173D7C /* TorrentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentRow.swift; sourceTree = "<group>"; };
 		F2B954E427FEF94000173D7C /* torrentList.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = torrentList.json; sourceTree = "<group>"; };
 		F2B954E627FEFBDB00173D7C /* Samples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Samples.swift; sourceTree = "<group>"; };
+		F2ED79A727FFB54F008B7B1E /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -105,6 +107,7 @@
 			children = (
 				F2B954C427FDCEBC00173D7C /* LoginView.swift */,
 				F2B954E027FEF64500173D7C /* TorrentList.swift */,
+				F2ED79A727FFB54F008B7B1E /* HomeView.swift */,
 				F2B954E227FEF8DB00173D7C /* TorrentRow.swift */,
 			);
 			path = Views;
@@ -189,6 +192,7 @@
 				F2B954C527FDCEBC00173D7C /* LoginView.swift in Sources */,
 				F2B954D927FEB4DE00173D7C /* TorrentFetchProtocol.swift in Sources */,
 				F2B954D527FEAAEA00173D7C /* TorrentManager.swift in Sources */,
+				F2ED79A827FFB54F008B7B1E /* HomeView.swift in Sources */,
 				F2B954E127FEF64500173D7C /* TorrentList.swift in Sources */,
 				F2B954C327FDCEBC00173D7C /* SwiftTorrentApp.swift in Sources */,
 			);

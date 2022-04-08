@@ -12,12 +12,6 @@ struct TorrentList: View {
     
     var body: some View {
         List {
-            Button {
-                manager.fetchTorrents()
-            } label: {
-                Text("Refresh")
-            }
-            
             ForEach(manager.torrents, id: \.id) { torrent in
                 TorrentRow(torrent: torrent)
             }

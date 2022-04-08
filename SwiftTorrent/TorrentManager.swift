@@ -6,17 +6,26 @@
 //
 
 import Foundation
+import Combine
 
 @MainActor
 class TorrentManager: ObservableObject {
     @Published var torrents: [TorrentProtocol] = []
     @Published var currentUser: String?
-    @Published var isConnected: Bool = false
     
     private let fetcher: TorrentFetchProtocol
     
+    private let timer = Timer.TimerPublisher(interval: 1, runLoop: .main, mode: .default)
+    private var cancellable: Cancellable?
+    private var disposables = Set<AnyCancellable>()
+    
     init(fetcher: TorrentFetchProtocol) {
         self.fetcher = fetcher
+        timer.sink { [weak self] _ in
+            guard let self = self else { return }
+            self.fetchTorrents()
+        }
+        .store(in: &disposables)
     }
     
     func login(username: String, password: String) async -> VoidResult<LoginError> {
@@ -24,15 +33,15 @@ class TorrentManager: ObservableObject {
         switch result {
         case .success:
             currentUser = username
-            isConnected = true
+            cancellable = timer.connect()
         case .failure(_):
             currentUser = nil
+            cancellable = nil
         }
         return result
     }
     
     func fetchTorrents() {
-        guard isConnected else { return }
         Task {
             let result = await fetcher.fetchTorrentList()
             switch result {
@@ -40,19 +49,10 @@ class TorrentManager: ObservableObject {
                 self.torrents = torrents
             case .failure(let error):
                 switch error {
-                case .network(_):
-                    isConnected = false
-                case .notFound:
-                    fatalError()
-                case .parsing(let description):
-                    fatalError()
                 case .unauthorized:
                     currentUser = nil
-                    isConnected = false
-                case .unknown(let description):
-                    fatalError()
-                case .notValidTorrentFile(let description):
-                    fatalError()
+                default:
+                    return
                 }
             }
         }

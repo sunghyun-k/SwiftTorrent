@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct Torrent: Identifiable {
     
@@ -79,6 +80,34 @@ extension Torrent {
         }
         if let completionOn = torrent.completionOn {
             self.completionOn = completionOn
+        }
+    }
+}
+
+extension Torrent.State {
+    var image: some View {
+        switch self {
+        case .downloading:
+            return Image(systemName: "arrow.down.circle.fill")
+                .foregroundColor(.blue)
+        case .uploading:
+            return Image(systemName: "arrow.up.circle.fill")
+                .foregroundColor(.green)
+        case .finished:
+            return Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(.green)
+        case .paused:
+            return Image(systemName: "pause.circle.fill")
+                .foregroundColor(.orange)
+        case .checking:
+            return Image(systemName: "gearshape.circle.fill")
+                .foregroundColor(.blue)
+        case .error:
+            return Image(systemName: "exclamationmark.circle.fill")
+                .foregroundColor(.red)
+        case .unknown:
+            return Image(systemName: "questionmark.circle.fill")
+                .foregroundColor(.yellow)
         }
     }
 }

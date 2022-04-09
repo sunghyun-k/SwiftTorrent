@@ -10,36 +10,16 @@ import SwiftUI
 struct TorrentRow: View {
     @EnvironmentObject var manager: TorrentManager
     var torrent: Torrent
+    
     var body: some View {
         HStack {
-            switch torrent.state {
-            case .downloading:
-                Image(systemName: "arrow.down.circle.fill")
-                    .foregroundColor(.blue)
-            case .uploading:
-                Image(systemName: "arrow.up.circle.fill")
-                    .foregroundColor(.green)
-            case .finished:
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.green)
-            case .paused:
-                Image(systemName: "pause.circle.fill")
-                    .foregroundColor(.orange)
-            case .checking:
-                Image(systemName: "gearshape.circle.fill")
-                    .foregroundColor(.blue)
-            case .error:
-                Image(systemName: "exclamationmark.circle.fill")
-                    .foregroundColor(.red)
-            case .unknown:
-                Image(systemName: "questionmark.circle.fill")
-                    .foregroundColor(.yellow)
-            }
-            VStack(alignment: .leading, spacing: 2) {
+            torrent.state.image
+                .font(.title2)
+            VStack(alignment: .leading, spacing: 3) {
                 Text(torrent.name)
                     .lineLimit(1)
-                    .font(.system(size: 14))
-                VStack(alignment: .leading, spacing: 3) {
+                    .font(.body)
+                VStack(alignment: .leading, spacing: 4) {
                     if torrent.progress < 1 {
                         ProgressView(value: torrent.progress)
                             .tint({
@@ -52,13 +32,13 @@ struct TorrentRow: View {
                     switch torrent.state {
                     case .finished, .uploading:
                         Text("\(torrent.size.byteFormat)")
-                            .font(.system(size: 10))
+                            .font(.footnote)
                     default:
                         Text("\(torrent.completed.byteFormat)/\(torrent.size.byteFormat) (\(torrent.downloadSpeed.byteFormat)/s)")
-                            .font(.system(size: 10))
+                            .font(.footnote)
                     }
                 }
-                .frame(height: 20)
+                .frame(height: 25)
             }
             Spacer(minLength: 20)
             Button {

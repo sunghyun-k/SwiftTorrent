@@ -10,8 +10,8 @@ import SwiftUI
 struct LoginView: View {
     @EnvironmentObject var manager: TorrentManager
     
-    @State private var username: String = "brm0821"
-    @State private var password: String = "ksh980821"
+    @State private var username: String = ""
+    @State private var password: String = ""
     
     enum Field: Hashable {
         case username, password
@@ -24,7 +24,7 @@ struct LoginView: View {
     var body: some View {
         VStack(spacing: 10) {
             Text("Swift Torrent")
-                .font(.system(size: 30, weight: .bold))
+                .font(.largeTitle)
             TextField("Username", text: $username)
                 .disableAutocorrection(true)
                 .textInputAutocapitalization(.never)
@@ -38,7 +38,7 @@ struct LoginView: View {
                 .focused($focusedField, equals: .password)
                 .onSubmit(login)
             Text(errorMessage)
-                .font(.system(size: 15))
+                .font(.body)
                 .foregroundColor(.red)
                 .frame(minHeight: 30)
             
@@ -85,7 +85,7 @@ struct LoginView: View {
 
 private extension View {
     func loginFieldStyle() -> some View {
-        self.font(.subheadline)
+        self.font(.body)
             .padding(12)
             .background(Color(white: 0.95))
             .cornerRadius(5)

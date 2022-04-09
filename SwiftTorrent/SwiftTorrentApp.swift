@@ -18,6 +18,9 @@ struct SwiftTorrentApp: App {
         WindowGroup {
             HostView()
                 .environmentObject(manager)
+                .task {
+                    await manager.login(username: "brm0821", password: "ksh980821")
+                }
         }
     }
 }

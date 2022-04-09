@@ -37,8 +37,48 @@ struct Torrent: Identifiable {
     /// percentage/100
     var progress: Float
     
-    var eta: TimeInterval
+    var estimatedTime: TimeInterval
     var addedOn: Date
     var completionOn: Date
 }
 
+extension Torrent {
+    mutating func update(_ torrent: TorrentProtocol) {
+        guard self.id == torrent.id else {
+            return
+        }
+        if let name = torrent.name {
+            self.name = name
+        }
+        if let state = torrent.state {
+            self.state = state
+        }
+        if let downloadSpeed = torrent.downloadSpeed {
+            self.downloadSpeed = downloadSpeed
+        }
+        if let uploadSpeed = torrent.uploadSpeed {
+            self.uploadSpeed = uploadSpeed
+        }
+        if let size = torrent.size {
+            self.size = size
+        }
+        if let amountLeft = torrent.amountLeft {
+            self.amountLeft = amountLeft
+        }
+        if let completed = torrent.completed {
+            self.completed = completed
+        }
+        if let progress = torrent.progress {
+            self.progress = progress
+        }
+        if let estimatedTime = torrent.estimatedTime {
+            self.estimatedTime = Double(estimatedTime)
+        }
+        if let addedOn = torrent.addedOn {
+            self.addedOn = addedOn
+        }
+        if let completionOn = torrent.completionOn {
+            self.completionOn = completionOn
+        }
+    }
+}

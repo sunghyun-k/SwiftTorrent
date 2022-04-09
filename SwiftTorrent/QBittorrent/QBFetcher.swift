@@ -92,7 +92,7 @@ extension QBFetcher: TorrentFetchProtocol {
             print(error)
             return .failure(.parsing(description: error.localizedDescription))
         }
-        return .success(torrents.compactMap { Torrent($0) })
+        return .success(torrents.compactMap { $0.torrent() })
     }
     func pause(torrents: [String]) {
         guard let url = makePauseTorrentsComponents(torrentIDs: torrents).url else {

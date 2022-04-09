@@ -19,7 +19,7 @@ struct QBTorrentResponse: Decodable {
     let dlLimit, dlspeed, downloaded, downloadedSession: Int?
     let eta: Int?
     let fLPiecePrio, forceStart: Bool?
-    let hash: String?
+    let hash: String
     let lastActivity: Date?
     let magnetURI: String?
     let maxRatio: Float?
@@ -34,7 +34,7 @@ struct QBTorrentResponse: Decodable {
     let seenComplete: Date?
     let seqDL: Bool?
     let size: Int?
-    let state: State?
+    let stateValue: State?
     let superSeeding: Bool?
     let tags: String?
     let timeActive, totalSize: Int?
@@ -72,7 +72,8 @@ struct QBTorrentResponse: Decodable {
         case seedingTimeLimit = "seeding_time_limit"
         case seenComplete = "seen_complete"
         case seqDL = "seq_dl"
-        case size, state
+        case size
+        case stateValue = "state"
         case superSeeding = "super_seeding"
         case tags
         case timeActive = "time_active"
@@ -109,90 +110,67 @@ struct QBTorrentResponse: Decodable {
 }
 
 extension QBTorrentResponse: TorrentProtocol {
-    func update(_ torrent: inout Torrent) {
-        guard self.hash == torrent.id else {
-            return
-        }
-        if let name = self.name {
-            torrent.name = name
-        }
-        if let qbState = self.state {
-            torrent.state = convertState(qbState)
-        }
-        if let downloadSpeed = self.dlspeed {
-            torrent.downloadSpeed = downloadSpeed
-        }
-        if let uploadSpeed = self.upspeed {
-            torrent.uploadSpeed = uploadSpeed
-        }
-        if let size = self.size {
-            torrent.size = size
-        }
-        if let amountLeft = self.amountLeft {
-            torrent.amountLeft = amountLeft
-        }
-        if let completed = self.completed {
-            torrent.completed = completed
-        }
-        if let progress = self.progress {
-            torrent.progress = progress
-        }
+    
+    var id: String {
+        self.hash
+    }
+    
+    var state: Torrent.State? {
+        self.stateValue?.convertState()
+    }
+    
+    var downloadSpeed: Int? {
+        self.dlspeed
+    }
+    
+    var uploadSpeed: Int? {
+        self.upspeed
+    }
+    
+    var estimatedTime: TimeInterval? {
         if let eta = self.eta {
-            torrent.eta = Double(eta)
+            return TimeInterval(eta)
         }
-        if let addedOn = self.addedOn {
-            torrent.addedOn = addedOn
-        }
-        if let completionOn = self.completionOn {
-            torrent.completionOn = completionOn
+        return nil
+    }
+    
+    static func convertState(_ state: QBTorrentResponse.State) -> Torrent.State {
+        switch state {
+        case .checkingDL, .checkingUP, .checkingResumeData, .allocating, .metaDL:
+            return .checking
+        case .downloading, .forcedDL, .stalledDL:
+            return .downloading
+        case .error, .missingFiles:
+            return .error
+        case .pausedDL, .queuedDL:
+            return .paused
+        case .pausedUP:
+            return .finished
+        case .unknown, .moving:
+            return .unknown
+        case .uploading, .forcedUP, .stalledUP, .queuedUP:
+            return .uploading
         }
     }
 }
 
-extension Torrent {
-    init?(_ tor: QBTorrentResponse) {
-        guard
-            let id = tor.hash,
-            let name = tor.name,
-            let qbState = tor.state,
-            let downloadSpeed = tor.dlspeed,
-            let uploadSpeed = tor.upspeed,
-            let size = tor.size,
-            let amountLeft = tor.amountLeft,
-            let completed = tor.completed,
-            let progress = tor.progress,
-            let eta = tor.eta,
-            let addedOn = tor.addedOn,
-            let completionOn = tor.completionOn else {
-            return nil
+extension QBTorrentResponse.State {
+    func convertState() -> Torrent.State {
+        switch self {
+        case .checkingDL, .checkingUP, .checkingResumeData, .allocating, .metaDL:
+            return .checking
+        case .downloading, .forcedDL, .stalledDL:
+            return .downloading
+        case .error, .missingFiles:
+            return .error
+        case .pausedDL, .queuedDL:
+            return .paused
+        case .pausedUP:
+            return .finished
+        case .unknown, .moving:
+            return .unknown
+        case .uploading, .forcedUP, .stalledUP, .queuedUP:
+            return .uploading
         }
-        
-        self.init(
-            id: id, name: name, state: convertState(qbState),
-            downloadSpeed: downloadSpeed, uploadSpeed: uploadSpeed, size: size,
-            amountLeft: amountLeft, completed: completed,
-            progress: progress,
-            eta: TimeInterval(eta),
-            addedOn: addedOn, completionOn: completionOn
-        )
-    }
-}
-
-private func convertState(_ state: QBTorrentResponse.State) -> Torrent.State {
-    switch state {
-    case .checkingDL, .checkingUP, .checkingResumeData, .allocating, .metaDL:
-        return .checking
-    case .downloading, .forcedDL, .stalledDL:
-        return .downloading
-    case .error, .missingFiles:
-        return .error
-    case .pausedDL, .queuedDL:
-        return .paused
-    case .pausedUP:
-        return .finished
-    case .unknown, .moving:
-        return .unknown
-    case .uploading, .forcedUP, .stalledUP, .queuedUP:
-        return .uploading
     }
 }

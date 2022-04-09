@@ -22,6 +22,10 @@ enum FetcherError: Error {
     case unknown(description: String?)
 }
 
+protocol TorrentProtocol {
+    func update(_ torrent: inout Torrent)
+}
+
 protocol TorrentFetchProtocol: AnyObject {
     var host: String { get set }
     var port: Int? { get set }

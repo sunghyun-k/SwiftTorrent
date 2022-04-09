@@ -108,6 +108,47 @@ struct QBTorrentResponse: Decodable {
     }
 }
 
+extension QBTorrentResponse: TorrentProtocol {
+    func update(_ torrent: inout Torrent) {
+        guard self.hash == torrent.id else {
+            return
+        }
+        if let name = self.name {
+            torrent.name = name
+        }
+        if let qbState = self.state {
+            torrent.state = convertState(qbState)
+        }
+        if let downloadSpeed = self.dlspeed {
+            torrent.downloadSpeed = downloadSpeed
+        }
+        if let uploadSpeed = self.upspeed {
+            torrent.uploadSpeed = uploadSpeed
+        }
+        if let size = self.size {
+            torrent.size = size
+        }
+        if let amountLeft = self.amountLeft {
+            torrent.amountLeft = amountLeft
+        }
+        if let completed = self.completed {
+            torrent.completed = completed
+        }
+        if let progress = self.progress {
+            torrent.progress = progress
+        }
+        if let eta = self.eta {
+            torrent.eta = Double(eta)
+        }
+        if let addedOn = self.addedOn {
+            torrent.addedOn = addedOn
+        }
+        if let completionOn = self.completionOn {
+            torrent.completionOn = completionOn
+        }
+    }
+}
+
 extension Torrent {
     init?(_ tor: QBTorrentResponse) {
         guard
@@ -134,45 +175,6 @@ extension Torrent {
             eta: TimeInterval(eta),
             addedOn: addedOn, completionOn: completionOn
         )
-    }
-    
-    mutating func update(_ tor: QBTorrentResponse) {
-        if let id = tor.hash {
-            self.id = id
-        }
-        if let name = tor.name {
-            self.name = name
-        }
-        if let qbState = tor.state {
-            self.state = convertState(qbState)
-        }
-        if let downloadSpeed = tor.dlspeed {
-            self.downloadSpeed = downloadSpeed
-        }
-        if let uploadSpeed = tor.upspeed {
-            self.uploadSpeed = uploadSpeed
-        }
-        if let size = tor.size {
-            self.size = size
-        }
-        if let amountLeft = tor.amountLeft {
-            self.amountLeft = amountLeft
-        }
-        if let completed = tor.completed {
-            self.completed = completed
-        }
-        if let progress = tor.progress {
-            self.progress = progress
-        }
-        if let eta = tor.eta {
-            self.eta = Double(eta)
-        }
-        if let addedOn = tor.addedOn {
-            self.addedOn = addedOn
-        }
-        if let completionOn = tor.completionOn {
-            self.completionOn = completionOn
-        }
     }
 }
 

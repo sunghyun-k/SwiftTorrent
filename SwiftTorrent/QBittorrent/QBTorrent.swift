@@ -7,113 +7,40 @@
 
 import Foundation
 
-struct QBTorrent {
-    private let data: QBTorrentResponse
-    init(_ data: QBTorrentResponse) {
-        self.data = data
-    }
-}
-
-extension QBTorrent: TorrentProtocol {
-    var addedOn: Date {
-        data.addedOn
-    }
-    
-    var amountLeft: Int {
-        data.amountLeft
-    }
-    
-    var completed: Int {
-        data.completed
-    }
-    
-    var completionOn: Date {
-        data.completionOn
-    }
-    
-    var downloadSpeed: Int {
-        data.dlspeed
-    }
-    
-    var eta: TimeInterval {
-        TimeInterval(data.eta)
-    }
-    
-    var id: String {
-        data.hash
-    }
-    
-    var name: String {
-        data.name
-    }
-    
-    var progress: Float {
-        data.progress
-    }
-    
-    var size: Int {
-        data.size
-    }
-    
-    var state: TorrentState {
-        switch data.state {
-        case .checkingDL, .checkingUP, .checkingResumeData, .allocating, .metaDL:
-            return .checking
-        case .downloading, .forcedDL, .stalledDL:
-            return .downloading
-        case .error, .missingFiles:
-            return .error
-        case .pausedDL, .queuedDL:
-            return .paused
-        case .pausedUP:
-            return .finished
-        case .unknown, .moving:
-            return .unknown
-        case .uploading, .forcedUP, .stalledUP, .queuedUP:
-            return .uploading
-        }
-    }
-    
-    var uploadSpeed: Int {
-        data.upspeed
-    }
-    
-}
-
 struct QBTorrentResponse: Decodable {
-    let addedOn: Date
-    let amountLeft: Int
-    let autoTmm: Bool
-    let availability: Double
-    let category: String
-    let completed: Int
-    let completionOn: Date
-    let contentPath: String
-    let dlLimit, dlspeed, downloaded, downloadedSession: Int
-    let eta: Int
-    let fLPiecePrio, forceStart: Bool
-    let hash: String
-    let lastActivity: Date
-    let magnetURI: String
-    let maxRatio: Float
-    let maxSeedingTime: Int
-    let name: String
-    let numComplete, numIncomplete, numLeechs, numSeeds: Int
-    let priority: Int
-    let progress: Float
-    let ratio, ratioLimit: Float
-    let savePath: String
-    let seedingTime, seedingTimeLimit: Int
-    let seenComplete: Date
-    let seqDL: Bool
-    let size: Int
-    let state: State
-    let superSeeding: Bool
-    let tags: String
-    let timeActive, totalSize: Int
-    let tracker: String
-    let trackersCount, upLimit, uploaded, uploadedSession: Int
-    let upspeed: Int
+    let addedOn: Date?
+    let amountLeft: Int?
+    let autoTmm: Bool?
+    let availability: Double?
+    let category: String?
+    let completed: Int?
+    let completionOn: Date?
+    let contentPath: String?
+    let dlLimit, dlspeed, downloaded, downloadedSession: Int?
+    let eta: Int?
+    let fLPiecePrio, forceStart: Bool?
+    let hash: String?
+    let lastActivity: Date?
+    let magnetURI: String?
+    let maxRatio: Float?
+    let maxSeedingTime: Int?
+    let name: String?
+    let numComplete, numIncomplete, numLeechs, numSeeds: Int?
+    let priority: Int?
+    let progress: Float?
+    let ratio, ratioLimit: Float?
+    let savePath: String?
+    let seedingTime, seedingTimeLimit: Int?
+    let seenComplete: Date?
+    let seqDL: Bool?
+    let size: Int?
+    let state: State?
+    let superSeeding: Bool?
+    let tags: String?
+    let timeActive, totalSize: Int?
+    let tracker: String?
+    let trackersCount, upLimit, uploaded, uploadedSession: Int?
+    let upspeed: Int?
 
     enum CodingKeys: String, CodingKey {
         case addedOn = "added_on"
@@ -178,5 +105,92 @@ struct QBTorrentResponse: Decodable {
         case checkingResumeData
         case moving
         case unknown
+    }
+}
+
+extension Torrent {
+    init?(_ tor: QBTorrentResponse) {
+        guard
+            let id = tor.hash,
+            let name = tor.name,
+            let qbState = tor.state,
+            let downloadSpeed = tor.dlspeed,
+            let uploadSpeed = tor.upspeed,
+            let size = tor.size,
+            let amountLeft = tor.amountLeft,
+            let completed = tor.completed,
+            let progress = tor.progress,
+            let eta = tor.eta,
+            let addedOn = tor.addedOn,
+            let completionOn = tor.completionOn else {
+            return nil
+        }
+        
+        self.init(
+            id: id, name: name, state: convertState(qbState),
+            downloadSpeed: downloadSpeed, uploadSpeed: uploadSpeed, size: size,
+            amountLeft: amountLeft, completed: completed,
+            progress: progress,
+            eta: TimeInterval(eta),
+            addedOn: addedOn, completionOn: completionOn
+        )
+    }
+    
+    mutating func update(_ tor: QBTorrentResponse) {
+        if let id = tor.hash {
+            self.id = id
+        }
+        if let name = tor.name {
+            self.name = name
+        }
+        if let qbState = tor.state {
+            self.state = convertState(qbState)
+        }
+        if let downloadSpeed = tor.dlspeed {
+            self.downloadSpeed = downloadSpeed
+        }
+        if let uploadSpeed = tor.upspeed {
+            self.uploadSpeed = uploadSpeed
+        }
+        if let size = tor.size {
+            self.size = size
+        }
+        if let amountLeft = tor.amountLeft {
+            self.amountLeft = amountLeft
+        }
+        if let completed = tor.completed {
+            self.completed = completed
+        }
+        if let progress = tor.progress {
+            self.progress = progress
+        }
+        if let eta = tor.eta {
+            self.eta = Double(eta)
+        }
+        if let addedOn = tor.addedOn {
+            self.addedOn = addedOn
+        }
+        if let completionOn = tor.completionOn {
+            self.completionOn = completionOn
+        }
+    }
+}
+
+private func convertState(_ state: QBTorrentResponse.State) -> Torrent.State {
+    switch state {
+    case .checkingDL, .checkingUP, .checkingResumeData, .allocating, .metaDL:
+        return .checking
+    case .downloading, .forcedDL, .stalledDL:
+        return .downloading
+    case .error, .missingFiles:
+        return .error
+    case .pausedDL, .queuedDL:
+        return .paused
+    case .pausedUP:
+        return .finished
+    case .unknown, .moving:
+        return .unknown
+    case .uploading, .forcedUP, .stalledUP, .queuedUP:
+        return .uploading
     }
 }

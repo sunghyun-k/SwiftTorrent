@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		F22E00FD2801B26000EAA82C /* Torrent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F22E00FC2801B26000EAA82C /* Torrent.swift */; };
 		F2B954C327FDCEBC00173D7C /* SwiftTorrentApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B954C227FDCEBC00173D7C /* SwiftTorrentApp.swift */; };
 		F2B954C527FDCEBC00173D7C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B954C427FDCEBC00173D7C /* LoginView.swift */; };
 		F2B954C727FDCEBD00173D7C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F2B954C627FDCEBD00173D7C /* Assets.xcassets */; };
@@ -25,6 +26,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		F22E00FC2801B26000EAA82C /* Torrent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Torrent.swift; sourceTree = "<group>"; };
 		F2B954BF27FDCEBC00173D7C /* SwiftTorrent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftTorrent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2B954C227FDCEBC00173D7C /* SwiftTorrentApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTorrentApp.swift; sourceTree = "<group>"; };
 		F2B954C427FDCEBC00173D7C /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
@@ -76,6 +78,7 @@
 				F2B954C227FDCEBC00173D7C /* SwiftTorrentApp.swift */,
 				F2B954DF27FEF61400173D7C /* Views */,
 				F2B954D827FEB4DE00173D7C /* TorrentFetchProtocol.swift */,
+				F22E00FC2801B26000EAA82C /* Torrent.swift */,
 				F2B954D427FEAAEA00173D7C /* TorrentManager.swift */,
 				F2B954DC27FEBFA500173D7C /* QBittorrent */,
 				F2B954D227FDEA8300173D7C /* Parsing.swift */,
@@ -188,6 +191,7 @@
 			files = (
 				F2B954D327FDEA8300173D7C /* Parsing.swift in Sources */,
 				F2B954D127FDCFCC00173D7C /* QBFetcher.swift in Sources */,
+				F22E00FD2801B26000EAA82C /* Torrent.swift in Sources */,
 				F2B954E327FEF8DB00173D7C /* TorrentRow.swift in Sources */,
 				F2B954E527FEF94000173D7C /* torrentList.json in Sources */,
 				F2B954D727FEB2DC00173D7C /* QBTorrent.swift in Sources */,

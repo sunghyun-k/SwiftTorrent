@@ -67,7 +67,7 @@ extension QBFetcher: TorrentFetchProtocol {
     }
     
     // MARK: - Torrents
-    func fetchTorrentList() async -> Result<[TorrentProtocol], FetcherError> {
+    func fetchTorrentList() async -> Result<[Torrent], FetcherError> {
         guard let url = makeTorrentListComponents().url else {
             return .failure(.network(description: "Cannot create url"))
         }
@@ -92,7 +92,7 @@ extension QBFetcher: TorrentFetchProtocol {
             print(error)
             return .failure(.parsing(description: error.localizedDescription))
         }
-        return .success(torrents.map(QBTorrent.init))
+        return .success(torrents.compactMap { Torrent($0) })
     }
     func pause(torrents: [String]) {
         guard let url = makePauseTorrentsComponents(torrentIDs: torrents).url else {

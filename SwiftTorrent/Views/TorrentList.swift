@@ -12,7 +12,7 @@ struct TorrentList: View {
     
     var body: some View {
         List {
-            ForEach(manager.torrents, id: \.id) { torrent in
+            ForEach(manager.torrents) { torrent in
                 TorrentRow(torrent: torrent)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button {

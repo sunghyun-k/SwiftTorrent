@@ -10,7 +10,7 @@ import Combine
 
 @MainActor
 class TorrentManager: ObservableObject {
-    @Published var torrents: [TorrentProtocol] = []
+    @Published var torrents: [Torrent] = []
     @Published var currentUser: String?
     
     private let fetcher: TorrentFetchProtocol
@@ -59,7 +59,7 @@ class TorrentManager: ObservableObject {
         }
     }
     
-    func pauseResumeTorrent(_ torrent: TorrentProtocol) {
+    func pauseResumeTorrent(_ torrent: Torrent) {
         switch torrent.state {
         case .paused, .finished:
             fetcher.resume(torrents: [torrent.id])
@@ -70,7 +70,7 @@ class TorrentManager: ObservableObject {
         }
     }
     
-    func deleteTorrents(_ torrents: [TorrentProtocol]) {
+    func deleteTorrents(_ torrents: [Torrent]) {
         fetcher.delete(torrents: torrents.map { $0.id }, deleteFiles: false)
     }
 }

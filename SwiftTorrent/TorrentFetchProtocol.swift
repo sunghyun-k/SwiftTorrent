@@ -21,35 +21,6 @@ enum FetcherError: Error {
     case notValidTorrentFile(description: String)
     case unknown(description: String?)
 }
-enum TorrentState {
-    case error
-    case uploading
-    case finished
-    case checking
-    case downloading
-    case paused
-    case unknown
-}
-protocol TorrentProtocol {
-    var addedOn: Date { get }
-    /// bytes
-    var amountLeft: Int { get }
-    /// bytes
-    var completed: Int { get }
-    var completionOn: Date { get }
-    /// bytes/s
-    var downloadSpeed: Int { get }
-    var eta: TimeInterval { get }
-    var id: String { get }
-    var name: String { get }
-    /// percentage/100
-    var progress: Float { get }
-    /// bytes
-    var size: Int { get }
-    var state: TorrentState { get }
-    /// bytes/s
-    var uploadSpeed: Int { get }
-}
 
 protocol TorrentFetchProtocol: AnyObject {
     var host: String { get set }
@@ -61,7 +32,7 @@ protocol TorrentFetchProtocol: AnyObject {
         password: String
     ) async -> VoidResult<LoginError>
     
-    func fetchTorrentList() async -> Result<[TorrentProtocol], FetcherError>
+    func fetchTorrentList() async -> Result<[Torrent], FetcherError>
     func pause(torrents: [String])
     func resume(torrents: [String])
     func delete(torrents: [String], deleteFiles: Bool)

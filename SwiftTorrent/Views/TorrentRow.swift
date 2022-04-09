@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TorrentRow: View {
     @EnvironmentObject var manager: TorrentManager
-    let torrent: TorrentProtocol
+    var torrent: Torrent
     var body: some View {
         HStack {
             switch torrent.state {

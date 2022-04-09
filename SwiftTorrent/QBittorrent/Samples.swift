@@ -7,13 +7,6 @@
 
 import Foundation
 
-extension QBTorrent {
-    static func sample() -> [QBTorrent] {
-        let response: [QBTorrentResponse] = load("torrentList.json")
-        return response.map(QBTorrent.init)
-    }
-}
-
 func load<T: Decodable>(_ filename: String) -> T {
     let data: Data
 

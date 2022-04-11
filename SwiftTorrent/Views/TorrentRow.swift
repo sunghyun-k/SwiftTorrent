@@ -28,10 +28,10 @@ struct TorrentRow: View {
                                 }
                                 return Color.gray
                             }())
+                            .animation(.default, value: torrent.progress)
                     }
                     Text(torrent.sizeDescription)
                         .font(.footnote)
-                        .animation(nil)
                 }
                 .frame(height: 25)
             }

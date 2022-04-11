@@ -25,7 +25,7 @@ struct TorrentList: View {
                         }
                 }
             }
-            .animation(.default, value: manager.torrents)
+            .animation(.default, value: manager.torrents.map { $0.id })
             .listStyle(.plain)
             .navigationTitle("Transfers")
             .toolbar {
@@ -69,8 +69,8 @@ struct TorrentList: View {
     }
 }
 
-struct TorrentList_Previews: PreviewProvider {
-    static var previews: some View {
-        TorrentList()
-    }
-}
+//struct TorrentList_Previews: PreviewProvider {
+//    static var previews: some View {
+//        TorrentList()
+//    }
+//}

@@ -8,8 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct Torrent: Identifiable, Equatable {
-    
+struct Torrent: Identifiable {
     var id: String
     var name: String
     

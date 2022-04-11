@@ -12,15 +12,15 @@ struct SwiftTorrentApp: App {
     @StateObject private var manager: TorrentManager = {
         let fetcher = QBFetcher(host: "127.0.0.1", port: 8080)
         let manager = TorrentManager(fetcher: fetcher)
+        Task {
+            await manager.login(username: "brm0821", password: "ksh980821")
+        }
         return manager
     }()
     var body: some Scene {
         WindowGroup {
-            HostView()
+            TorrentList()
                 .environmentObject(manager)
-                .task {
-                    await manager.login(username: "brm0821", password: "ksh980821")
-                }
         }
     }
 }

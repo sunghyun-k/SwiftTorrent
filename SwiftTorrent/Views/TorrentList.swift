@@ -14,7 +14,12 @@ struct TorrentList: View {
         NavigationView {
             List {
                 ForEach(manager.torrents) { torrent in
-                    TorrentRow(torrent: torrent)
+                    NavigationLink {
+                        TorrentRow(torrent: torrent)
+                    } label: {
+                        TorrentRow(torrent: torrent)
+                        
+                    }
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button {
                                 manager.deleteTorrents([torrent])
@@ -65,6 +70,12 @@ struct TorrentList: View {
 
                 }
             }
+        }
+        .sheet(isPresented: .init(
+            get: { manager.currentUser == nil },
+            set: { _ in }
+        )) {
+            LoginView()
         }
     }
 }

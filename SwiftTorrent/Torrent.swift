@@ -80,7 +80,7 @@ extension Torrent {
     var sizeDescription: String {
         switch state {
         case .finished, .uploading:
-            return "\(size.byteFormat)"
+            return "\(size.byteFormat) (↑ \(uploadSpeed.byteFormat)/s)"
         default:
             return "\(completed.byteFormat)/\(size.byteFormat) (\(downloadSpeed.byteFormat)/s)"
         }

@@ -43,25 +43,21 @@ struct TorrentList: View {
                         TorrentRow(torrent: torrent)
                     } label: {
                         TorrentRow(torrent: torrent)
-                        
                     }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button {
-                                manager.deleteTorrents([torrent])
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                            .tint(.red)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button {
+                            manager.deleteTorrents([torrent])
+                        } label: {
+                            Label("Delete", systemImage: "trash")
                         }
+                        .tint(.red)
+                    }
                 }
             }
             .animation(.default, value: sortedTorrents.map { $0.id })
             .listStyle(.plain)
             .navigationTitle("Transfers")
             .toolbar {
-                ToolbarItemGroup(placement: .bottomBar) {
-                    Text("dd")
-                }
                 ToolbarItem {
                     Menu {
                         Button {
@@ -84,22 +80,21 @@ struct TorrentList: View {
                         Picker("dd", selection: .init(
                             get: { sortBy },
                             set: { newValue in
-                                print(newValue)
-                                if self.sortBy == newValue {
+                                if sortBy == newValue {
                                     ascending.toggle()
                                 } else {
-                                    self.sortBy = newValue
+                                    sortBy = newValue
                                     ascending = true
                                 }
                             })) {
-                            ForEach(SortBy.allCases) { kind in
-                                if kind == sortBy {
-                                    Label(kind.rawValue, systemImage: ascending ? "chevron.up" : "chevron.down")
-                                } else {
-                                    Text(kind.rawValue)
+                                ForEach(SortBy.allCases) { kind in
+                                    if kind == sortBy {
+                                        Label(kind.rawValue, systemImage: ascending ? "chevron.up" : "chevron.down")
+                                    } else {
+                                        Text(kind.rawValue)
+                                    }
                                 }
                             }
-                        }
                         
                         Divider()
                         Button {
@@ -107,7 +102,7 @@ struct TorrentList: View {
                         } label: {
                             Label("Settings", systemImage: "gear")
                         }
-
+                        
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }

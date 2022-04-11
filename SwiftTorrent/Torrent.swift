@@ -13,13 +13,13 @@ struct Torrent: Identifiable {
     var name: String
     
     enum State {
+        case unknown
         case error
-        case uploading
-        case finished
         case checking
         case downloading
+        case uploading
         case paused
-        case unknown
+        case finished
     }
     var state: State
     
@@ -86,3 +86,5 @@ extension Torrent {
         }
     }
 }
+
+extension Torrent.State: Comparable { }

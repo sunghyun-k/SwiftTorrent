@@ -10,10 +10,35 @@ import SwiftUI
 struct TorrentList: View {
     @EnvironmentObject var manager: TorrentManager
     
+    enum SortBy: String, CaseIterable, Identifiable {
+        case name = "Name"
+        case size = "Size"
+        case progress = "Progress"
+        case state = "State"
+        case downloadSpeed = "Download Speed"
+        var id: SortBy { self }
+    }
+    @State var sortBy = SortBy.name
+    @State var ascending = true
+    var sortedTorrents: [Torrent] {
+        switch sortBy {
+        case .name:
+            return manager.torrents.sorted(by: \.name, ascending ? {$0<$1}:{$0>$1})
+        case . size:
+            return manager.torrents.sorted(by: \.size, ascending ? {$0<$1}:{$0>$1})
+        case .progress:
+            return manager.torrents.sorted(by: \.progress, ascending ? {$0<$1}:{$0>$1})
+        case .state:
+            return manager.torrents.sorted(by: \.state, ascending ? {$0<$1}:{$0>$1})
+        case .downloadSpeed:
+            return manager.torrents.sorted(by: \.downloadSpeed, ascending ? {$0<$1}:{$0>$1})
+        }
+    }
+    
     var body: some View {
         NavigationView {
             List {
-                ForEach(manager.torrents) { torrent in
+                ForEach(sortedTorrents) { torrent in
                     NavigationLink {
                         TorrentRow(torrent: torrent)
                     } label: {
@@ -30,10 +55,13 @@ struct TorrentList: View {
                         }
                 }
             }
-            .animation(.default, value: manager.torrents.map { $0.id })
+            .animation(.default, value: sortedTorrents.map { $0.id })
             .listStyle(.plain)
             .navigationTitle("Transfers")
             .toolbar {
+                ToolbarItemGroup(placement: .bottomBar) {
+                    Text("dd")
+                }
                 ToolbarItem {
                     Menu {
                         Button {
@@ -52,11 +80,27 @@ struct TorrentList: View {
                             Label("Add torrent links", systemImage: "link.badge.plus")
                         }
                         Divider()
-                        Picker("Sort", selection: .constant(0)) {
-                            ForEach(0..<3) { name in
-                                Text("\(name)")
+                        
+                        Picker("dd", selection: .init(
+                            get: { sortBy },
+                            set: { newValue in
+                                print(newValue)
+                                if self.sortBy == newValue {
+                                    ascending.toggle()
+                                } else {
+                                    self.sortBy = newValue
+                                    ascending = true
+                                }
+                            })) {
+                            ForEach(SortBy.allCases) { kind in
+                                if kind == sortBy {
+                                    Label(kind.rawValue, systemImage: ascending ? "chevron.up" : "chevron.down")
+                                } else {
+                                    Text(kind.rawValue)
+                                }
                             }
                         }
+                        
                         Divider()
                         Button {
                             print("settings")
@@ -67,7 +111,6 @@ struct TorrentList: View {
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
-
                 }
             }
         }

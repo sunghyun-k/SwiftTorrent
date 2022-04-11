@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-struct Torrent: Identifiable {
+struct Torrent: Identifiable, Equatable {
     
     var id: String
     var name: String
@@ -38,76 +38,52 @@ struct Torrent: Identifiable {
     /// percentage/100
     var progress: Float
     
-    var estimatedTime: TimeInterval
+    var eta: TimeInterval
     var addedOn: Date
     var completionOn: Date
 }
 
-extension Torrent {
-    mutating func update(_ torrent: TorrentProtocol) {
-        guard self.id == torrent.id else {
-            return
-        }
-        if let name = torrent.name {
-            self.name = name
-        }
-        if let state = torrent.state {
-            self.state = state
-        }
-        if let downloadSpeed = torrent.downloadSpeed {
-            self.downloadSpeed = downloadSpeed
-        }
-        if let uploadSpeed = torrent.uploadSpeed {
-            self.uploadSpeed = uploadSpeed
-        }
-        if let size = torrent.size {
-            self.size = size
-        }
-        if let amountLeft = torrent.amountLeft {
-            self.amountLeft = amountLeft
-        }
-        if let completed = torrent.completed {
-            self.completed = completed
-        }
-        if let progress = torrent.progress {
-            self.progress = progress
-        }
-        if let estimatedTime = torrent.estimatedTime {
-            self.estimatedTime = Double(estimatedTime)
-        }
-        if let addedOn = torrent.addedOn {
-            self.addedOn = addedOn
-        }
-        if let completionOn = torrent.completionOn {
-            self.completionOn = completionOn
+extension Torrent.State {
+    @ViewBuilder
+    var image: some View {
+        switch self {
+        case .downloading:
+            Image(systemName: "arrow.down.circle.fill")
+                .foregroundColor(.blue)
+        case .uploading:
+            Image(systemName: "arrow.up.circle.fill")
+                .foregroundColor(.green)
+        case .finished:
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(.green)
+        case .paused:
+            Image(systemName: "pause.circle.fill")
+                .foregroundColor(.orange)
+        case .checking:
+            Image(systemName: "circle.fill")
+                .foregroundColor(.blue)
+                .overlay {
+                    ProgressView()
+                        .tint(.white)
+                        .scaleEffect(0.7)
+                }
+        case .error:
+            Image(systemName: "exclamationmark.circle.fill")
+                .foregroundColor(.red)
+        case .unknown:
+            Image(systemName: "questionmark.circle.fill")
+                .foregroundColor(.yellow)
         }
     }
 }
 
-extension Torrent.State {
-    var image: some View {
-        switch self {
-        case .downloading:
-            return Image(systemName: "arrow.down.circle.fill")
-                .foregroundColor(.blue)
-        case .uploading:
-            return Image(systemName: "arrow.up.circle.fill")
-                .foregroundColor(.green)
-        case .finished:
-            return Image(systemName: "checkmark.circle.fill")
-                .foregroundColor(.green)
-        case .paused:
-            return Image(systemName: "pause.circle.fill")
-                .foregroundColor(.orange)
-        case .checking:
-            return Image(systemName: "gearshape.circle.fill")
-                .foregroundColor(.blue)
-        case .error:
-            return Image(systemName: "exclamationmark.circle.fill")
-                .foregroundColor(.red)
-        case .unknown:
-            return Image(systemName: "questionmark.circle.fill")
-                .foregroundColor(.yellow)
+extension Torrent {
+    var sizeDescription: String {
+        switch state {
+        case .finished, .uploading:
+            return "\(size.byteFormat)"
+        default:
+            return "\(completed.byteFormat)/\(size.byteFormat) (\(downloadSpeed.byteFormat)/s)"
         }
     }
 }

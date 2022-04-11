@@ -29,18 +29,14 @@ struct TorrentRow: View {
                                 return Color.gray
                             }())
                     }
-                    switch torrent.state {
-                    case .finished, .uploading:
-                        Text("\(torrent.size.byteFormat)")
-                            .font(.footnote)
-                    default:
-                        Text("\(torrent.completed.byteFormat)/\(torrent.size.byteFormat) (\(torrent.downloadSpeed.byteFormat)/s)")
-                            .font(.footnote)
-                    }
+                    Text(torrent.sizeDescription)
+                        .font(.footnote)
+                        .animation(nil)
                 }
                 .frame(height: 25)
             }
             Spacer(minLength: 20)
+            
             Button {
                 manager.pauseResumeTorrent(torrent)
             } label: {

@@ -8,39 +8,39 @@
 import Foundation
 
 struct QBTorrentResponse: Decodable {
-    let addedOn: Date?
-    let amountLeft: Int?
-    let autoTmm: Bool?
-    let availability: Double?
-    let category: String?
-    let completed: Int?
-    let completionOn: Date?
-    let contentPath: String?
-    let dlLimit, dlspeed, downloaded, downloadedSession: Int?
-    let eta: Int?
-    let fLPiecePrio, forceStart: Bool?
+    let addedOn: Date
+    let amountLeft: Int
+    let autoTmm: Bool
+    let availability: Double
+    let category: String
+    let completed: Int
+    let completionOn: Date
+    let contentPath: String
+    let dlLimit, dlspeed, downloaded, downloadedSession: Int
+    let eta: Int
+    let fLPiecePrio, forceStart: Bool
     let hash: String
-    let lastActivity: Date?
-    let magnetURI: String?
-    let maxRatio: Float?
-    let maxSeedingTime: Int?
-    let name: String?
-    let numComplete, numIncomplete, numLeechs, numSeeds: Int?
-    let priority: Int?
-    let progress: Float?
-    let ratio, ratioLimit: Float?
-    let savePath: String?
-    let seedingTime, seedingTimeLimit: Int?
-    let seenComplete: Date?
-    let seqDL: Bool?
-    let size: Int?
-    let stateValue: State?
-    let superSeeding: Bool?
-    let tags: String?
-    let timeActive, totalSize: Int?
-    let tracker: String?
-    let trackersCount, upLimit, uploaded, uploadedSession: Int?
-    let upspeed: Int?
+    let lastActivity: Date
+    let magnetURI: String
+    let maxRatio: Float
+    let maxSeedingTime: Int
+    let name: String
+    let numComplete, numIncomplete, numLeechs, numSeeds: Int
+    let priority: Int
+    let progress: Float
+    let ratio, ratioLimit: Float
+    let savePath: String
+    let seedingTime, seedingTimeLimit: Int
+    let seenComplete: Date
+    let seqDL: Bool
+    let size: Int
+    let state: State
+    let superSeeding: Bool
+    let tags: String
+    let timeActive, totalSize: Int
+    let tracker: String
+    let trackersCount, upLimit, uploaded, uploadedSession: Int
+    let upspeed: Int
 
     enum CodingKeys: String, CodingKey {
         case addedOn = "added_on"
@@ -73,7 +73,7 @@ struct QBTorrentResponse: Decodable {
         case seenComplete = "seen_complete"
         case seqDL = "seq_dl"
         case size
-        case stateValue = "state"
+        case state
         case superSeeding = "super_seeding"
         case tags
         case timeActive = "time_active"
@@ -109,33 +109,9 @@ struct QBTorrentResponse: Decodable {
     }
 }
 
-extension QBTorrentResponse: TorrentProtocol {
-    
-    var id: String {
-        self.hash
-    }
-    
-    var state: Torrent.State? {
-        self.stateValue?.convertState()
-    }
-    
-    var downloadSpeed: Int? {
-        self.dlspeed
-    }
-    
-    var uploadSpeed: Int? {
-        self.upspeed
-    }
-    
-    var estimatedTime: TimeInterval? {
-        if let eta = self.eta {
-            return TimeInterval(eta)
-        }
-        return nil
-    }
-    
-    static func convertState(_ state: QBTorrentResponse.State) -> Torrent.State {
-        switch state {
+extension QBTorrentResponse.State {
+    var convertedState: Torrent.State {
+        switch self {
         case .checkingDL, .checkingUP, .checkingResumeData, .allocating, .metaDL:
             return .checking
         case .downloading, .forcedDL, .stalledDL:
@@ -154,23 +130,8 @@ extension QBTorrentResponse: TorrentProtocol {
     }
 }
 
-extension QBTorrentResponse.State {
-    func convertState() -> Torrent.State {
-        switch self {
-        case .checkingDL, .checkingUP, .checkingResumeData, .allocating, .metaDL:
-            return .checking
-        case .downloading, .forcedDL, .stalledDL:
-            return .downloading
-        case .error, .missingFiles:
-            return .error
-        case .pausedDL, .queuedDL:
-            return .paused
-        case .pausedUP:
-            return .finished
-        case .unknown, .moving:
-            return .unknown
-        case .uploading, .forcedUP, .stalledUP, .queuedUP:
-            return .uploading
-        }
+extension Torrent {
+    init(_ data: QBTorrentResponse) {
+        self.init(id: data.hash, name: data.name, state: data.state.convertedState, downloadSpeed: data.dlspeed, uploadSpeed: data.upspeed, size: data.size, amountLeft: data.amountLeft, completed: data.completed, progress: data.progress, eta: TimeInterval(data.eta), addedOn: data.addedOn, completionOn: data.completionOn)
     }
 }

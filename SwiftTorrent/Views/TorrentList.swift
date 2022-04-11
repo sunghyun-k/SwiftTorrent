@@ -25,6 +25,7 @@ struct TorrentList: View {
                         }
                 }
             }
+            .animation(.default, value: manager.torrents)
             .listStyle(.plain)
             .navigationTitle("Transfers")
             .toolbar {

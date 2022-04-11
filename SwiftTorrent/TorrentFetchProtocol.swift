@@ -22,27 +22,6 @@ enum FetcherError: Error {
     case unknown(description: String?)
 }
 
-protocol TorrentProtocol {
-    var id: String { get }
-    var name: String? { get }
-    var state: Torrent.State? { get }
-    /// bytes/s
-    var downloadSpeed: Int? { get }
-    /// bytes/s
-    var uploadSpeed: Int? { get }
-    /// bytes
-    var size: Int? { get }
-    /// bytes
-    var amountLeft: Int? { get }
-    /// bytes
-    var completed: Int? { get }
-    /// percentage/100
-    var progress: Float? { get }
-    var estimatedTime: TimeInterval? { get }
-    var addedOn: Date? { get }
-    var completionOn: Date? { get }
-}
-
 protocol TorrentFetchProtocol: AnyObject {
     var host: String { get set }
     var port: Int? { get set }
@@ -64,31 +43,4 @@ protocol TorrentFetchProtocol: AnyObject {
 enum VoidResult<Failure> where Failure: Error {
     case success
     case failure(Failure)
-}
-
-extension TorrentProtocol {
-    func torrent() -> Torrent? {
-        guard
-            let name = self.name,
-            let state = self.state,
-            let downloadSpeed = self.downloadSpeed,
-            let uploadSpeed = self.uploadSpeed,
-            let size = self.size,
-            let amountLeft = self.amountLeft,
-            let completed = self.completed,
-            let progress = self.progress,
-            let estimatedTime = self.estimatedTime,
-            let addedOn = self.addedOn,
-            let completionOn = self.completionOn else {
-            return nil
-        }
-        return Torrent(
-            id: self.id, name: name, state: state,
-            downloadSpeed: downloadSpeed, uploadSpeed: uploadSpeed,
-            size: size, amountLeft: amountLeft, completed: completed,
-            progress: progress,
-            estimatedTime: TimeInterval(estimatedTime),
-            addedOn: addedOn, completionOn: completionOn
-        )
-    }
 }

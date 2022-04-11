@@ -10,34 +10,28 @@ import SwiftUI
 struct TorrentList: View {
     @EnvironmentObject var manager: TorrentManager
     
-    enum SortBy: String, CaseIterable, Identifiable {
-        case name = "Name"
-        case size = "Size"
-        case progress = "Progress"
-        case state = "State"
-        case downloadSpeed = "Download Speed"
-        var id: SortBy { self }
-    }
-    @State var sortBy = SortBy.name
-    @State var ascending = true
-    var sortedTorrents: [Torrent] {
-        switch sortBy {
+    @State private var sortBy = (kind: SortBy.name, ascending: true)
+    private var sortedTorrents: [Torrent] {
+        switch sortBy.kind {
         case .name:
-            return manager.torrents.sorted(by: \.name, ascending ? {$0<$1}:{$0>$1})
+            return manager.torrents.sorted(by: \.name, sortBy.ascending ? {$0<$1}:{$0>$1})
         case . size:
-            return manager.torrents.sorted(by: \.size, ascending ? {$0<$1}:{$0>$1})
+            return manager.torrents.sorted(by: \.size, sortBy.ascending ? {$0<$1}:{$0>$1})
         case .progress:
-            return manager.torrents.sorted(by: \.progress, ascending ? {$0<$1}:{$0>$1})
+            return manager.torrents.sorted(by: \.progress, sortBy.ascending ? {$0<$1}:{$0>$1})
         case .state:
-            return manager.torrents.sorted(by: \.state, ascending ? {$0<$1}:{$0>$1})
+            return manager.torrents.sorted(by: \.state, sortBy.ascending ? {$0<$1}:{$0>$1})
         case .downloadSpeed:
-            return manager.torrents.sorted(by: \.downloadSpeed, ascending ? {$0<$1}:{$0>$1})
+            return manager.torrents.sorted(by: \.downloadSpeed, sortBy.ascending ? {$0<$1}:{$0>$1})
         }
     }
     
+    @State private var editMode = EditMode.inactive
+    @State private var selection = Set<String>()
+    
     var body: some View {
         NavigationView {
-            List {
+            List(selection: $selection) {
                 ForEach(sortedTorrents) { torrent in
                     NavigationLink {
                         TorrentRow(torrent: torrent)
@@ -54,57 +48,57 @@ struct TorrentList: View {
                     }
                 }
             }
+            .environment(\.editMode, $editMode)
             .animation(.default, value: sortedTorrents.map { $0.id })
             .listStyle(.plain)
             .navigationTitle("Transfers")
             .toolbar {
-                ToolbarItem {
-                    Menu {
-                        Button {
-                            print("Select")
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if editMode.isEditing {
+                        Menu {
+                            SortMenu(sortBy: $sortBy.kind, ascending: $sortBy.ascending)
                         } label: {
-                            Label("Select", systemImage: "checkmark.circle")
+                            Image(systemName: "arrow.up.arrow.down.circle")
                         }
-                        Button {
-                            print("file")
-                        } label: {
-                            Label("Add torrent files", systemImage: "doc.badge.plus")
-                        }
-                        Button {
-                            print("link")
-                        } label: {
-                            Label("Add torrent links", systemImage: "link.badge.plus")
-                        }
-                        Divider()
-                        
-                        Picker("dd", selection: .init(
-                            get: { sortBy },
-                            set: { newValue in
-                                if sortBy == newValue {
-                                    ascending.toggle()
-                                } else {
-                                    sortBy = newValue
-                                    ascending = true
-                                }
-                            })) {
-                                ForEach(SortBy.allCases) { kind in
-                                    if kind == sortBy {
-                                        Label(kind.rawValue, systemImage: ascending ? "chevron.up" : "chevron.down")
-                                    } else {
-                                        Text(kind.rawValue)
-                                    }
-                                }
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    if !editMode.isEditing {
+                        Menu {
+                            Button {
+                                editMode = .active
+                            } label: {
+                                Label("Select", systemImage: "checkmark.circle")
                             }
-                        
-                        Divider()
-                        Button {
-                            print("settings")
+                            Button {
+                                print("file")
+                            } label: {
+                                Label("Add torrent files", systemImage: "doc.badge.plus")
+                            }
+                            Button {
+                                print("link")
+                            } label: {
+                                Label("Add torrent links", systemImage: "link.badge.plus")
+                            }
+                            Divider()
+                            
+                            SortMenu(sortBy: $sortBy.kind, ascending: $sortBy.ascending)
+                            
+                            Divider()
+                            Button {
+                                print("settings")
+                            } label: {
+                                Label("Settings", systemImage: "gear")
+                            }
+                            
                         } label: {
-                            Label("Settings", systemImage: "gear")
+                            Image(systemName: "ellipsis.circle")
                         }
-                        
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
+                    } else {
+                        Button("Done") {
+                            editMode = .inactive
+                            selection = []
+                        }
                     }
                 }
             }
@@ -115,6 +109,41 @@ struct TorrentList: View {
         )) {
             LoginView(loginToken: $manager.loginToken, loginFetcher: manager.loginFetcher())
         }
+    }
+}
+
+enum SortBy: String, CaseIterable, Identifiable {
+    case name = "Name"
+    case size = "Size"
+    case progress = "Progress"
+    case state = "State"
+    case downloadSpeed = "Download Speed"
+    var id: SortBy { self }
+}
+struct SortMenu: View {
+    @Binding var sortBy: SortBy
+    @Binding var ascending: Bool
+    
+    var body: some View {
+        Picker("Sort by", selection: .init(
+            get: { sortBy },
+            set: { newValue in
+                if sortBy == newValue {
+                    ascending.toggle()
+                } else {
+                    sortBy = newValue
+                    ascending = true
+                }
+            })) {
+                ForEach(SortBy.allCases) { kind in
+                    if kind == sortBy {
+                        Label(kind.rawValue, systemImage: ascending ? "chevron.up" : "chevron.down")
+                    } else {
+                        Text(kind.rawValue)
+                    }
+                }
+            }
+            .pickerStyle(.inline)
     }
 }
 

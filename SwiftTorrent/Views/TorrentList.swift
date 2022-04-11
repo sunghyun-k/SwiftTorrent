@@ -72,10 +72,10 @@ struct TorrentList: View {
             }
         }
         .sheet(isPresented: .init(
-            get: { manager.currentUser == nil },
+            get: { manager.loginToken == nil },
             set: { _ in }
         )) {
-            LoginView()
+            LoginView(loginToken: $manager.loginToken, loginFetcher: manager.loginFetcher())
         }
     }
 }

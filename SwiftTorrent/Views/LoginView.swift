@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct LoginView: View {
-    @EnvironmentObject var manager: TorrentManager
+    @Binding var loginToken: String?
+    
+    var loginFetcher: LoginTokenFetcherProtocol
     
     @State private var username: String = ""
     @State private var password: String = ""
@@ -62,21 +64,12 @@ struct LoginView: View {
         errorMessage.removeAll()
         isLoading = true
         Task {
-            let result = await manager.login(username: username, password: password)
+            let result = await loginFetcher.loginToken(username: username, password: password)
             switch result {
-            case .success:
-                break
+            case .success(let token):
+                loginToken = token
             case .failure(let error):
-                switch error {
-                case .bannedIP:
-                    errorMessage = "IP is banned for too many failed login attempts."
-                case .wrongInfo:
-                    errorMessage = "Wrong username or password."
-                case .unknown(let description):
-                    errorMessage = description ?? "Unknown error."
-                case .network(description: let description):
-                    errorMessage = description
-                }
+                errorMessage = error.localizedDescription
             }
             isLoading = false
         }

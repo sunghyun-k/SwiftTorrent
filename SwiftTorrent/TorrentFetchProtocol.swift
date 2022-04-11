@@ -7,12 +7,6 @@
 
 import Foundation
 
-enum LoginError: Error {
-    case bannedIP
-    case wrongInfo
-    case network(description: String)
-    case unknown(description: String?)
-}
 enum FetcherError: Error {
     case network(description: String)
     case parsing(description: String)
@@ -22,22 +16,28 @@ enum FetcherError: Error {
     case unknown(description: String?)
 }
 
-protocol TorrentFetchProtocol: AnyObject {
+protocol TorrentFetcherProtocol: AnyObject {
     var host: String { get set }
     var port: Int? { get set }
-    var sid: String? { get set }
     
-    func login(
+    func fetchTorrentList(_ loginToken: String?) async -> Result<[Torrent], FetcherError>
+    func pause(torrents: [String], _ loginToken: String?)
+    func resume(torrents: [String], _ loginToken: String?)
+    func delete(torrents: [String], deleteFiles: Bool, _ loginToken: String?)
+    func addTorrents(fromFiles files: [Data], _ loginToken: String?) async -> VoidResult<FetcherError>
+    func addTorrents(fromURLs urls: [URL], _ loginToken: String?) async -> VoidResult<FetcherError>
+}
+
+enum LoginError: Error {
+    case network(description: String)
+    case parsing(description: String)
+    case custom(description: String)
+}
+protocol LoginTokenFetcherProtocol {
+    func loginToken(
         username: String,
         password: String
-    ) async -> VoidResult<LoginError>
-    
-    func fetchTorrentList() async -> Result<[Torrent], FetcherError>
-    func pause(torrents: [String])
-    func resume(torrents: [String])
-    func delete(torrents: [String], deleteFiles: Bool)
-    func addTorrents(fromFiles files: [Data]) async -> VoidResult<FetcherError>
-    func addTorrents(fromURLs urls: [URL]) async -> VoidResult<FetcherError>
+    ) async -> Result<String, LoginError>
 }
 
 enum VoidResult<Failure> where Failure: Error {

@@ -37,11 +37,7 @@ class TorrentManager: ObservableObject {
     }
     
     func loginFetcher() -> LoginTokenFetcherProtocol {
-        if let fetcher = fetcher as? LoginTokenFetcherProtocol {
-            return fetcher
-        } else {
-            return QBFetcher(host: fetcher.host, port: fetcher.port)
-        }
+        fetcher.loginFetcher()
     }
     
     func fetchTorrents() {

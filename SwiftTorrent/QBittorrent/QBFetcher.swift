@@ -64,6 +64,7 @@ extension QBFetcher: LoginTokenFetcherProtocol {
 }
 
 extension QBFetcher: TorrentFetcherProtocol {
+    
     // MARK: - Torrents
     func fetchTorrentList(_ loginToken: String?) async -> Result<[Torrent], FetcherError> {
         guard let url = makeTorrentListComponents().url else {
@@ -137,6 +138,9 @@ extension QBFetcher: TorrentFetcherProtocol {
         fatalError()
     }
     
+    func loginFetcher() -> LoginTokenFetcherProtocol {
+        self
+    }
 }
 
 // MARK: - Private

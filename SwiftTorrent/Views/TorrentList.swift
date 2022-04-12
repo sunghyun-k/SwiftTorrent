@@ -55,7 +55,8 @@ struct TorrentList: View {
                 }
             }
             .environment(\.editMode, $editMode)
-            .animation(.default, value: sortedTorrents.map { $0.id })
+            .animation(.default, value: (sortedTorrents.map { $0.id }))
+            .animation(.default, value: editMode)
             .listStyle(.plain)
             .navigationTitle("Transfers")
             .toolbar {

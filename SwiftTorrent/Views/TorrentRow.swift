@@ -36,6 +36,7 @@ struct TorrentRow: View {
                         .font(.footnote)
                 }
                 .frame(height: 25)
+                .animation(.default, value: torrent.state)
             }
             Spacer(minLength: 20)
             if !isEditing {

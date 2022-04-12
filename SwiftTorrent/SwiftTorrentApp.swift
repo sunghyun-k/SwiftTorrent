@@ -28,7 +28,16 @@ struct SwiftTorrentApp: App {
             TorrentList()
                 .environmentObject(manager)
                 .onOpenURL { url in
-                    manager.addTorrents([url.absoluteString])
+                    if url.scheme == "file" {
+                        guard let data = try? Data(contentsOf: url) else {
+                            print("Cannot read file")
+                            return
+                        }
+                        let file = File(name: url.lastPathComponent, data: data)
+                        manager.addTorrents([file])
+                    } else {
+                        manager.addTorrents([url.absoluteString])
+                    }
                 }
         }
     }

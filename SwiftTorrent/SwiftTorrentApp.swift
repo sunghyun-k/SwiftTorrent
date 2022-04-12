@@ -27,6 +27,9 @@ struct SwiftTorrentApp: App {
         WindowGroup {
             TorrentList()
                 .environmentObject(manager)
+                .onOpenURL { url in
+                    manager.addTorrents([url.absoluteString])
+                }
         }
     }
 }

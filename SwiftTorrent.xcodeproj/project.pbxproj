@@ -35,6 +35,7 @@
 		F28E2B62280522720033BCED /* Data+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+String.swift"; sourceTree = "<group>"; };
 		F28E2B64280543CF0033BCED /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		F28E2B6628054C9E0033BCED /* UserInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInputView.swift; sourceTree = "<group>"; };
+		F28E2B6B28058ED00033BCED /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F292A10C28042F6100DEDBDA /* Sequence+Sort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+Sort.swift"; sourceTree = "<group>"; };
 		F2B954BF27FDCEBC00173D7C /* SwiftTorrent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftTorrent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2B954C227FDCEBC00173D7C /* SwiftTorrentApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTorrentApp.swift; sourceTree = "<group>"; };
@@ -83,6 +84,7 @@
 		F2B954C127FDCEBC00173D7C /* SwiftTorrent */ = {
 			isa = PBXGroup;
 			children = (
+				F28E2B6B28058ED00033BCED /* Info.plist */,
 				F2B954C227FDCEBC00173D7C /* SwiftTorrentApp.swift */,
 				F2B954DF27FEF61400173D7C /* Views */,
 				F2B954D827FEB4DE00173D7C /* TorrentFetchProtocol.swift */,
@@ -350,6 +352,7 @@
 				DEVELOPMENT_TEAM = 54QJQV3G77;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SwiftTorrent/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -379,6 +382,7 @@
 				DEVELOPMENT_TEAM = 54QJQV3G77;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SwiftTorrent/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

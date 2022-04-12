@@ -69,7 +69,15 @@ class TorrentManager: ObservableObject {
         }
     }
     
-    func deleteTorrents(_ torrents: [Torrent]) {
-        fetcher.delete(torrents: torrents.map { $0.id }, deleteFiles: false, loginToken)
+    func deleteTorrents(_ torrents: [String]) {
+        fetcher.delete(torrents: torrents, deleteFiles: false, loginToken)
+    }
+    
+    func pauseTorrents(_ torrents: [String]) {
+        fetcher.pause(torrents: torrents, loginToken)
+    }
+    
+    func resumeTorrents(_ torrents: [String]) {
+        fetcher.resume(torrents: torrents, loginToken)
     }
 }

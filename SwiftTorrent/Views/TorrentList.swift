@@ -29,18 +29,24 @@ struct TorrentList: View {
     @State private var editMode = EditMode.inactive
     @State private var selection = Set<String>()
     
+    private func exitEditMode() {
+        editMode = .inactive
+        selection.removeAll()
+    }
+    
     var body: some View {
         NavigationView {
             List(selection: $selection) {
                 ForEach(sortedTorrents) { torrent in
                     NavigationLink {
                         TorrentRow(torrent: torrent)
+                        
                     } label: {
-                        TorrentRow(torrent: torrent)
+                        TorrentRow(torrent: torrent, isEditing: true)
                     }
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button {
-                            manager.deleteTorrents([torrent])
+                            manager.deleteTorrents([torrent].map { $0.id })
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }
@@ -53,16 +59,7 @@ struct TorrentList: View {
             .listStyle(.plain)
             .navigationTitle("Transfers")
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    if editMode.isEditing {
-                        Menu {
-                            SortMenu(sortBy: $sortBy.kind, ascending: $sortBy.ascending)
-                        } label: {
-                            Image(systemName: "arrow.up.arrow.down.circle")
-                        }
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
                     if !editMode.isEditing {
                         Menu {
                             Button {
@@ -95,9 +92,37 @@ struct TorrentList: View {
                             Image(systemName: "ellipsis.circle")
                         }
                     } else {
+                        Menu {
+                            SortMenu(sortBy: $sortBy.kind, ascending: $sortBy.ascending)
+                        } label: {
+                            Image(systemName: "arrow.up.arrow.down.circle")
+                        }
                         Button("Done") {
-                            editMode = .inactive
-                            selection = []
+                            exitEditMode()
+                        }
+                    }
+                }
+                ToolbarItemGroup(placement: .bottomBar) {
+                    if editMode.isEditing {
+                        Button {
+                            manager.resumeTorrents(Array(selection))
+                            exitEditMode()
+                        } label: {
+                            Image(systemName: "play.fill")
+                        }
+                        Spacer()
+                        Button {
+                            manager.pauseTorrents(Array(selection))
+                            exitEditMode()
+                        } label: {
+                            Image(systemName: "pause.fill")
+                        }
+                        Spacer()
+                        Button {
+                            manager.deleteTorrents(Array(selection))
+                            exitEditMode()
+                        } label: {
+                            Image(systemName: "trash")
                         }
                     }
                 }

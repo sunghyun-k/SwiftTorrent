@@ -11,6 +11,8 @@ struct TorrentRow: View {
     @EnvironmentObject var manager: TorrentManager
     var torrent: Torrent
     
+    var isEditing: Bool = false
+    
     var body: some View {
         HStack {
             torrent.state.image
@@ -36,21 +38,22 @@ struct TorrentRow: View {
                 .frame(height: 25)
             }
             Spacer(minLength: 20)
-            
-            Button {
-                manager.pauseResumeTorrent(torrent)
-            } label: {
-                switch torrent.state {
-                case .paused, .finished:
-                    Image(systemName: "play.fill")
-                case .downloading, .uploading, .checking:
-                    Image(systemName: "pause.fill")
-                default:
-                    Spacer()
+            if !isEditing {
+                Button {
+                    manager.pauseResumeTorrent(torrent)
+                } label: {
+                    switch torrent.state {
+                    case .paused, .finished:
+                        Image(systemName: "play.fill")
+                    case .downloading, .uploading, .checking:
+                        Image(systemName: "pause.fill")
+                    default:
+                        Spacer()
+                    }
                 }
+                .buttonStyle(.plain)
+                .frame(width: 12)
             }
-            .buttonStyle(.plain)
-            .frame(width: 12)
         }
         .padding([.top, .bottom], 2)
     }

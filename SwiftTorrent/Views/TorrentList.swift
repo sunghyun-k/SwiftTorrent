@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers.UTType
 
 struct TorrentList: View {
     @EnvironmentObject var manager: TorrentManager
@@ -137,9 +138,19 @@ struct TorrentList: View {
                 }
             }
         }
-        .sheet(isPresented: $showDocumentPicker) {
-            DocumentPicker { files in
+        .fileImporter(isPresented: $showDocumentPicker, allowedContentTypes: [UTType(filenameExtension: "torrent")!], allowsMultipleSelection: true) { result in
+            switch result {
+            case .success(let urls):
+                let files: [File] = urls.compactMap { url in
+                    guard let data = try? Data(contentsOf: url) else {
+                        return nil
+                    }
+                    return File(name: url.lastPathComponent, data: data)
+                }
                 manager.addTorrents(files)
+            case .failure(let error):
+                print(error)
+                return
             }
         }
         .sheet(isPresented: $showLinkPrompt) {

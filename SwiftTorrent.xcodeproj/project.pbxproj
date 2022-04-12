@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		F22E00FD2801B26000EAA82C /* Torrent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F22E00FC2801B26000EAA82C /* Torrent.swift */; };
-		F28E2B6128050BF60033BCED /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28E2B6028050BF60033BCED /* DocumentPicker.swift */; };
 		F28E2B63280522720033BCED /* Data+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28E2B62280522720033BCED /* Data+String.swift */; };
 		F28E2B65280543CF0033BCED /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28E2B64280543CF0033BCED /* File.swift */; };
 		F28E2B6728054C9E0033BCED /* UserInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28E2B6628054C9E0033BCED /* UserInputView.swift */; };
@@ -31,7 +30,6 @@
 
 /* Begin PBXFileReference section */
 		F22E00FC2801B26000EAA82C /* Torrent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Torrent.swift; sourceTree = "<group>"; };
-		F28E2B6028050BF60033BCED /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		F28E2B62280522720033BCED /* Data+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+String.swift"; sourceTree = "<group>"; };
 		F28E2B64280543CF0033BCED /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		F28E2B6628054C9E0033BCED /* UserInputView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInputView.swift; sourceTree = "<group>"; };
@@ -127,7 +125,6 @@
 				F2B954C427FDCEBC00173D7C /* LoginView.swift */,
 				F2B954E027FEF64500173D7C /* TorrentList.swift */,
 				F28E2B6628054C9E0033BCED /* UserInputView.swift */,
-				F28E2B6028050BF60033BCED /* DocumentPicker.swift */,
 				F2B954E227FEF8DB00173D7C /* TorrentRow.swift */,
 			);
 			path = Views;
@@ -219,7 +216,6 @@
 				F2ED79AA2800435B008B7B1E /* Int+ByteFormatter.swift in Sources */,
 				F2B954D527FEAAEA00173D7C /* TorrentManager.swift in Sources */,
 				F2B954E127FEF64500173D7C /* TorrentList.swift in Sources */,
-				F28E2B6128050BF60033BCED /* DocumentPicker.swift in Sources */,
 				F2B954C327FDCEBC00173D7C /* SwiftTorrentApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

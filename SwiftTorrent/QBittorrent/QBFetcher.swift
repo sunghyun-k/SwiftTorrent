@@ -148,8 +148,24 @@ extension QBFetcher: TorrentFetcherProtocol {
         return .success
     }
     
-    func addTorrents(fromURLs urls: [URL], _ loginToken: String?) async -> VoidResult<FetcherError> {
-        fatalError()
+    func addTorrents(fromURLs urls: [String], _ loginToken: String?) async -> VoidResult<FetcherError> {
+        guard let url = makeAddTorrentsComponents().url else {
+            return .failure(.network(description: "Cannot create URL."))
+        }
+        let stringData = urls.compactMap { urlString in
+            urlString.data(using: .utf8)
+        }
+        let joined = stringData.joined(separator: "\n".data(using: .utf8)!)
+        let formData = FormData(key: "urls", value: Data(joined), filename: nil, contentType: nil)
+        let boundary = UUID().uuidString
+        let body = makeFormData(parameters: [formData], boundary: boundary)
+        do {
+            _ = try await postData(body, to: url, boundary: boundary, loginToken)
+        } catch let error {
+            print(error)
+            return .failure(.network(description: error.localizedDescription))
+        }
+        return .success
     }
     
     func loginFetcher() -> LoginTokenFetcherProtocol {
@@ -204,6 +220,8 @@ private extension QBFetcher {
             disposition += "Content-Disposition: form-data; name=\"\(param.key)\""
             if let filename = param.filename {
                 disposition += "; filename=\"\(filename)\""
+            } else {
+                disposition += "\r\n"
             }
             disposition += "\r\n"
             data += disposition
@@ -217,6 +235,7 @@ private extension QBFetcher {
         data += "--\(boundary)-\r\n"
         return data
     }
+    
 }
 
 // MARK: - qBittorrent API

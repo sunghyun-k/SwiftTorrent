@@ -86,4 +86,10 @@ class TorrentManager: ObservableObject {
             let result = await fetcher.addTorrents(fromFiles: torrents, loginToken)
         }
     }
+    
+    func addTorrents(_ links: [String]) {
+        Task {
+            await fetcher.addTorrents(fromURLs: links ,loginToken)
+        }
+    }
 }

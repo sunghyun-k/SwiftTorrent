@@ -31,6 +31,8 @@ struct TorrentList: View {
     
     @State private var showDocumentPicker = false
     
+    @State private var showLinkPrompt = false
+    
     private func exitEditMode() {
         editMode = .inactive
         selection.removeAll()
@@ -70,15 +72,19 @@ struct TorrentList: View {
                             } label: {
                                 Label("Select", systemImage: "checkmark.circle")
                             }
-                            Button {
-                                showDocumentPicker = true
+                            Menu {
+                                Button {
+                                    showDocumentPicker = true
+                                } label: {
+                                    Label("Add torrent files", systemImage: "doc.badge.plus")
+                                }
+                                Button {
+                                    showLinkPrompt = true
+                                } label: {
+                                    Label("Add torrent links", systemImage: "link.badge.plus")
+                                }
                             } label: {
-                                Label("Add torrent files", systemImage: "doc.badge.plus")
-                            }
-                            Button {
-                                print("link")
-                            } label: {
-                                Label("Add torrent links", systemImage: "link.badge.plus")
+                                Label("Add torrents", systemImage: "plus.circle")
                             }
                             Divider()
                             
@@ -135,6 +141,14 @@ struct TorrentList: View {
             DocumentPicker { files in
                 manager.addTorrents(files)
             }
+        }
+        .sheet(isPresented: $showLinkPrompt) {
+            UserInputView { text in
+                manager.addTorrents([text])
+            }
+        }
+        .onSubmit {
+            print("dd")
         }
         .sheet(isPresented: .init(
             get: { manager.loginToken == nil },

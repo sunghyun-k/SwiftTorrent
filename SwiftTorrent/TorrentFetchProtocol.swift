@@ -25,7 +25,7 @@ protocol TorrentFetcherProtocol: AnyObject {
     func resume(torrents: [String], _ loginToken: String?)
     func delete(torrents: [String], deleteFiles: Bool, _ loginToken: String?)
     func addTorrents(fromFiles files: [File], _ loginToken: String?) async -> VoidResult<FetcherError>
-    func addTorrents(fromURLs urls: [URL], _ loginToken: String?) async -> VoidResult<FetcherError>
+    func addTorrents(fromURLs urls: [String], _ loginToken: String?) async -> VoidResult<FetcherError>
     
     func loginFetcher() -> LoginTokenFetcherProtocol
 }

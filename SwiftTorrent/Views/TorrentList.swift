@@ -60,7 +60,7 @@ struct TorrentList: View {
             .navigationTitle("Transfers")
             .toolbar {
                 ToolbarItemGroup(placement: .navigationBarTrailing) {
-                    if !editMode.isEditing {
+                    if editMode != .active {
                         Menu {
                             Button {
                                 editMode = .active
@@ -103,7 +103,7 @@ struct TorrentList: View {
                     }
                 }
                 ToolbarItemGroup(placement: .bottomBar) {
-                    if editMode.isEditing {
+                    if editMode == .active {
                         Button {
                             manager.resumeTorrents(Array(selection))
                             exitEditMode()

@@ -30,7 +30,6 @@ struct TorrentList: View {
     @State private var selection = Set<String>()
     
     @State private var showDocumentPicker = false
-    @State private var fileText = ""
     
     private func exitEditMode() {
         editMode = .inactive
@@ -40,7 +39,6 @@ struct TorrentList: View {
     var body: some View {
         NavigationView {
             List(selection: $selection) {
-                Text(fileText)
                 ForEach(sortedTorrents) { torrent in
                     NavigationLink {
                         TorrentRow(torrent: torrent)
@@ -134,9 +132,8 @@ struct TorrentList: View {
             }
         }
         .sheet(isPresented: $showDocumentPicker) {
-            DocumentPicker { urls in
-                fileText = "\(urls)"
-                print(urls)
+            DocumentPicker { files in
+                manager.addTorrents(files)
             }
         }
         .sheet(isPresented: .init(

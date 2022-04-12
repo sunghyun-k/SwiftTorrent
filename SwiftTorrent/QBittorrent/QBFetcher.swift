@@ -130,8 +130,22 @@ extension QBFetcher: TorrentFetcherProtocol {
         }
     }
     
-    func addTorrents(fromFiles files: [Data], _ loginToken: String?) async -> VoidResult<FetcherError> {
-        fatalError()
+    func addTorrents(fromFiles files: [File], _ loginToken: String?) async -> VoidResult<FetcherError> {
+        guard let url = makeAddTorrentsComponents().url else {
+            return .failure(.network(description: "Cannot create URL."))
+        }
+        let formData = files.map {
+            FormData(key: "torrents", value: $0.data, filename: $0.name, contentType: "application/x-bittorrent")
+        }
+        let boundary = UUID().uuidString
+        let body = makeFormData(parameters: formData, boundary: boundary)
+        do {
+            _ = try await postData(body, to: url, boundary: boundary, loginToken)
+        } catch let error {
+            print(error)
+            return .failure(.network(description: error.localizedDescription))
+        }
+        return .success
     }
     
     func addTorrents(fromURLs urls: [URL], _ loginToken: String?) async -> VoidResult<FetcherError> {
@@ -160,13 +174,15 @@ private extension QBFetcher {
         
     }
     
-    func postData(_ data: Data, to url: URL, _ sid: String?) async throws -> (Data, HTTPURLResponse) {
-//        print(url.absoluteString)
+    func postData(_ data: Data, to url: URL, boundary: String, _ sid: String?) async throws -> (Data, HTTPURLResponse) {
+        print(url.absoluteString)
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         if let sid = sid {
             request.addValue("SID=\(sid)", forHTTPHeaderField: "Cookie")
         }
+        request.addValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.addValue("\(data.count)", forHTTPHeaderField: "Content-Length")
         let (responseData, response) = try await session.upload(for: request, from: data)
         guard let response = response as? HTTPURLResponse else {
             throw FetcherError.network(description: "Couldn't get HTTP response")
@@ -176,12 +192,12 @@ private extension QBFetcher {
     
     struct FormData {
         let key: String
-        let value: Any
+        let value: Data
         let filename: String?
         let contentType: String?
     }
     func makeFormData(parameters: [FormData], boundary: String) -> Data {
-        var data = ""
+        var data = Data()
         parameters.forEach { param in
             data += "--\(boundary)\r\n"
             var disposition = ""
@@ -195,11 +211,11 @@ private extension QBFetcher {
             if let contentType = param.contentType {
                 data += "Content-Type: \(contentType)\r\n\r\n"
             }
-            data += String(data: param.value as! Data, encoding: .utf8)!
+            data += param.value
             data += "\r\n"
         }
-        data += "--\(boundary)\r\n-"
-        return data.data(using: .utf8)!
+        data += "--\(boundary)-\r\n"
+        return data
     }
 }
 
@@ -266,6 +282,14 @@ private extension QBFetcher {
     func makeDeleteTorrentsComponents(torrentIDs: [String], deleteFiles: Bool) -> URLComponents {
         var components = makeManageTorrentsComponents(path: Components.Torrents.delete, torrentIDs: torrentIDs)
         components.queryItems?.append(.init(name: "deleteFiles", value: String(deleteFiles)))
+        return components
+    }
+    func makeAddTorrentsComponents() -> URLComponents {
+        var components = URLComponents()
+        components.scheme = Components.scheme
+        components.host = host
+        components.port = port
+        components.path = Components.Torrents.add
         return components
     }
 }

@@ -80,4 +80,10 @@ class TorrentManager: ObservableObject {
     func resumeTorrents(_ torrents: [String]) {
         fetcher.resume(torrents: torrents, loginToken)
     }
+    
+    func addTorrents(_ torrents: [File]) {
+        Task {
+            let result = await fetcher.addTorrents(fromFiles: torrents, loginToken)
+        }
+    }
 }

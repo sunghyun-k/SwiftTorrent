@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		F22E00FD2801B26000EAA82C /* Torrent.swift in Sources */ = {isa = PBXBuildFile; fileRef = F22E00FC2801B26000EAA82C /* Torrent.swift */; };
 		F28E2B6128050BF60033BCED /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28E2B6028050BF60033BCED /* DocumentPicker.swift */; };
+		F28E2B63280522720033BCED /* Data+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28E2B62280522720033BCED /* Data+String.swift */; };
+		F28E2B65280543CF0033BCED /* File.swift in Sources */ = {isa = PBXBuildFile; fileRef = F28E2B64280543CF0033BCED /* File.swift */; };
 		F292A10D28042F6100DEDBDA /* Sequence+Sort.swift in Sources */ = {isa = PBXBuildFile; fileRef = F292A10C28042F6100DEDBDA /* Sequence+Sort.swift */; };
 		F2B954C327FDCEBC00173D7C /* SwiftTorrentApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B954C227FDCEBC00173D7C /* SwiftTorrentApp.swift */; };
 		F2B954C527FDCEBC00173D7C /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B954C427FDCEBC00173D7C /* LoginView.swift */; };
@@ -29,6 +31,8 @@
 /* Begin PBXFileReference section */
 		F22E00FC2801B26000EAA82C /* Torrent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Torrent.swift; sourceTree = "<group>"; };
 		F28E2B6028050BF60033BCED /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
+		F28E2B62280522720033BCED /* Data+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Data+String.swift"; sourceTree = "<group>"; };
+		F28E2B64280543CF0033BCED /* File.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = File.swift; sourceTree = "<group>"; };
 		F292A10C28042F6100DEDBDA /* Sequence+Sort.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+Sort.swift"; sourceTree = "<group>"; };
 		F2B954BF27FDCEBC00173D7C /* SwiftTorrent.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftTorrent.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F2B954C227FDCEBC00173D7C /* SwiftTorrentApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftTorrentApp.swift; sourceTree = "<group>"; };
@@ -82,8 +86,10 @@
 				F2B954D827FEB4DE00173D7C /* TorrentFetchProtocol.swift */,
 				F22E00FC2801B26000EAA82C /* Torrent.swift */,
 				F2B954D427FEAAEA00173D7C /* TorrentManager.swift */,
+				F28E2B64280543CF0033BCED /* File.swift */,
 				F2B954DC27FEBFA500173D7C /* QBittorrent */,
 				F2B954D227FDEA8300173D7C /* Parsing.swift */,
+				F28E2B62280522720033BCED /* Data+String.swift */,
 				F2ED79A92800435B008B7B1E /* Int+ByteFormatter.swift */,
 				F292A10C28042F6100DEDBDA /* Sequence+Sort.swift */,
 				F2B954C627FDCEBD00173D7C /* Assets.xcassets */,
@@ -200,8 +206,10 @@
 				F2B954E527FEF94000173D7C /* torrentList.json in Sources */,
 				F2B954D727FEB2DC00173D7C /* QBTorrent.swift in Sources */,
 				F2B954E727FEFBDB00173D7C /* Samples.swift in Sources */,
+				F28E2B63280522720033BCED /* Data+String.swift in Sources */,
 				F2B954C527FDCEBC00173D7C /* LoginView.swift in Sources */,
 				F2B954D927FEB4DE00173D7C /* TorrentFetchProtocol.swift in Sources */,
+				F28E2B65280543CF0033BCED /* File.swift in Sources */,
 				F2ED79AA2800435B008B7B1E /* Int+ByteFormatter.swift in Sources */,
 				F2B954D527FEAAEA00173D7C /* TorrentManager.swift in Sources */,
 				F2B954E127FEF64500173D7C /* TorrentList.swift in Sources */,

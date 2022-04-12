@@ -10,9 +10,9 @@ import UniformTypeIdentifiers.UTType
 
 struct DocumentPicker: UIViewControllerRepresentable {
     
-    var onDocumentsPicked: ([URL]) -> ()
+    var onDocumentsPicked: ([File]) -> ()
     
-    init(onDocumentsPicked: @escaping (_: [URL]) -> ()) {
+    init(onDocumentsPicked: @escaping (_: [File]) -> ()) {
         self.onDocumentsPicked = onDocumentsPicked
     }
     
@@ -33,16 +33,21 @@ struct DocumentPicker: UIViewControllerRepresentable {
     
     class Coordinator: NSObject, UIDocumentPickerDelegate, UINavigationControllerDelegate {
         
-        var onDocumentsPicked: ([URL]) -> ()
+        var onDocumentsPicked: ([File]) -> ()
         
-        init(onDocumentsPicked: @escaping ([URL]) -> ()) {
+        init(onDocumentsPicked: @escaping ([File]) -> ()) {
             self.onDocumentsPicked = onDocumentsPicked
         }
         
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-            onDocumentsPicked(urls)
+            let files: [File] = urls.compactMap { url in
+                guard let data = try? Data(contentsOf: url) else {
+                    return nil
+                }
+                return File(name: url.lastPathComponent, data: data)
+            }
+            onDocumentsPicked(files)
         }
         
     }
-    
 }

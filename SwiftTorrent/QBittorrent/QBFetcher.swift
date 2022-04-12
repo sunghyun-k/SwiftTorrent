@@ -147,7 +147,7 @@ extension QBFetcher: TorrentFetcherProtocol {
 private extension QBFetcher {
     
     func getData(from url: URL, _ sid: String?) async throws -> (Data, HTTPURLResponse) {
-        print(url.absoluteString)
+//        print(url.absoluteString)
         var request = URLRequest(url: url)
         if let sid = sid {
             request.addValue("SID=\(sid)", forHTTPHeaderField: "Cookie")
@@ -161,7 +161,7 @@ private extension QBFetcher {
     }
     
     func postData(_ data: Data, to url: URL, _ sid: String?) async throws -> (Data, HTTPURLResponse) {
-        print(url.absoluteString)
+//        print(url.absoluteString)
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         if let sid = sid {

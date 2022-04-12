@@ -29,6 +29,9 @@ struct TorrentList: View {
     @State private var editMode = EditMode.inactive
     @State private var selection = Set<String>()
     
+    @State private var showDocumentPicker = false
+    @State private var fileText = ""
+    
     private func exitEditMode() {
         editMode = .inactive
         selection.removeAll()
@@ -37,6 +40,7 @@ struct TorrentList: View {
     var body: some View {
         NavigationView {
             List(selection: $selection) {
+                Text(fileText)
                 ForEach(sortedTorrents) { torrent in
                     NavigationLink {
                         TorrentRow(torrent: torrent)
@@ -69,7 +73,7 @@ struct TorrentList: View {
                                 Label("Select", systemImage: "checkmark.circle")
                             }
                             Button {
-                                print("file")
+                                showDocumentPicker = true
                             } label: {
                                 Label("Add torrent files", systemImage: "doc.badge.plus")
                             }
@@ -127,6 +131,12 @@ struct TorrentList: View {
                         }
                     }
                 }
+            }
+        }
+        .sheet(isPresented: $showDocumentPicker) {
+            DocumentPicker { urls in
+                fileText = "\(urls)"
+                print(urls)
             }
         }
         .sheet(isPresented: .init(

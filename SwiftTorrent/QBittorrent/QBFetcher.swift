@@ -11,16 +11,10 @@ class QBFetcher {
     private let session: URLSession
     private let decoder = Decoder()
     
-    var host: String
+    var host: String = "127.0.0.1"
     var port: Int?
     
-    init(
-        host: String,
-        port: Int? = nil
-    ) {
-        self.host = host
-        self.port = port
-        
+    init() {
         let config = URLSessionConfiguration.default
         config.httpCookieAcceptPolicy = .never
         self.session = URLSession(configuration: config)

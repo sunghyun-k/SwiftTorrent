@@ -32,14 +32,17 @@ class TorrentManager: ObservableObject {
         static let loginInfo = "loginInfo"
     }
     
-    private let fetcher: TorrentFetcherProtocol
+    private let fetcher: TorrentFetcherProtocol = QBFetcher()
     
     private let timer = Timer.TimerPublisher(interval: 1.5, runLoop: .main, mode: .default)
     private var cancellable: Cancellable?
     private var disposables = Set<AnyCancellable>()
     
-    init(fetcher: TorrentFetcherProtocol) {
-        self.fetcher = fetcher
+    init() {
+        if let info = loadLoginInfo() {
+            fetcher.host = info.host
+            fetcher.port = info.port
+        }
         timer.sink { [weak self] _ in
             guard let self = self else { return }
             self.fetchTorrents()

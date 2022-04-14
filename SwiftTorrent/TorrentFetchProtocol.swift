@@ -35,7 +35,7 @@ enum LoginError: Error {
     case parsing(description: String)
     case custom(description: String)
 }
-protocol LoginTokenFetcherProtocol {
+protocol LoginTokenFetcherProtocol: AnyObject {
     func loginToken(
         username: String,
         password: String

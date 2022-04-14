@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct LoginView: View {
-    @Binding var loginToken: String?
-    
-    var loginFetcher: LoginTokenFetcherProtocol
+    @EnvironmentObject var manager: TorrentManager
     
     @State private var username: String = ""
     @State private var password: String = ""
@@ -64,10 +62,10 @@ struct LoginView: View {
         errorMessage.removeAll()
         isLoading = true
         Task {
-            let result = await loginFetcher.loginToken(username: username, password: password)
+            let result = await manager.login(username: username, password: password)
             switch result {
-            case .success(let token):
-                loginToken = token
+            case .success:
+                return
             case .failure(let error):
                 errorMessage = error.localizedDescription
             }

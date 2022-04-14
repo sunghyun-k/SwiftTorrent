@@ -158,14 +158,11 @@ struct TorrentList: View {
                 manager.addTorrents([text])
             }
         }
-        .onSubmit {
-            print("dd")
-        }
         .sheet(isPresented: .init(
             get: { manager.loginToken == nil },
             set: { _ in }
         )) {
-            LoginView(loginToken: $manager.loginToken, loginFetcher: manager.loginFetcher())
+            LoginView()
         }
     }
 }

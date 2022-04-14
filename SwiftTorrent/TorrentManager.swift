@@ -14,8 +14,10 @@ class TorrentManager: ObservableObject {
     @Published var loginToken: String? {
         didSet {
             if loginToken == nil {
+                cancellable?.cancel()
                 cancellable = nil
             } else {
+                fetchTorrents()
                 cancellable = timer.connect()
             }
         }
@@ -38,6 +40,21 @@ class TorrentManager: ObservableObject {
     
     func loginFetcher() -> LoginTokenFetcherProtocol {
         fetcher.loginFetcher()
+    }
+    
+    func login(username: String, password: String) async -> VoidResult<LoginError> {
+        let result = await fetcher.loginFetcher().loginToken(username: username, password: password)
+        switch result {
+        case .success(let token):
+            self.loginToken = token
+            return .success
+        case .failure(let error):
+            return .failure(error)
+        }
+    }
+    
+    func loadStoredLoginToken() {
+        
     }
     
     func fetchTorrents() {

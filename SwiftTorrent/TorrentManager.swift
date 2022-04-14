@@ -31,15 +31,6 @@ class TorrentManager: ObservableObject {
         static let loginToken = "loginToken"
     }
     
-    var host: String {
-        get { fetcher.host }
-        set { fetcher.host = newValue }
-    }
-    var port: Int? {
-        get { fetcher.port }
-        set { fetcher.port = newValue }
-    }
-    
     private let fetcher: TorrentFetcherProtocol
     
     private let timer = Timer.TimerPublisher(interval: 1.5, runLoop: .main, mode: .default)
@@ -57,8 +48,14 @@ class TorrentManager: ObservableObject {
         loadLoginToken()
     }
     
-    func login(username: String, password: String) async -> VoidResult<LoginError> {
-        let result = await fetcher.loginFetcher().loginToken(username: username, password: password)
+    func login(
+        host: String, port: Int?,
+        username: String, password: String
+    ) async -> VoidResult<LoginError> {
+        let result = await fetcher.loginFetcher().loginToken(
+            host: host, port: port,
+            username: username, password: password
+        )
         switch result {
         case .success(let token):
             self.loginToken = token

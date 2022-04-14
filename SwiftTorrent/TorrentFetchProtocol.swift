@@ -37,6 +37,8 @@ enum LoginError: Error {
 }
 protocol LoginTokenFetcherProtocol: AnyObject {
     func loginToken(
+        host: String,
+        port: Int?,
         username: String,
         password: String
     ) async -> Result<String, LoginError>

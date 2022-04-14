@@ -10,11 +10,13 @@ import SwiftUI
 struct LoginView: View {
     @EnvironmentObject var manager: TorrentManager
     
-    @State private var username: String = ""
-    @State private var password: String = ""
+    @State var host: String = ""
+    @State var port: String = ""
+    @State var username: String = ""
+    @State var password: String = ""
     
     enum Field: Hashable {
-        case username, password
+        case host, port, username, password
     }
     @FocusState private var focusedField: Field?
     
@@ -24,21 +26,35 @@ struct LoginView: View {
     var body: some View {
         VStack(spacing: 10) {
             Text("Swift Torrent")
-                .font(.largeTitle)
-            TextField("Username", text: $username)
-                .disableAutocorrection(true)
-                .textInputAutocapitalization(.never)
-                .loginFieldStyle()
-                .focused($focusedField, equals: .username)
-                .onSubmit {
-                    focusedField = .password
-                }
-            SecureField("Password", text: $password)
-                .loginFieldStyle()
-                .focused($focusedField, equals: .password)
-                .onSubmit(login)
+                .font(.system(size: 34, weight: .bold))
+            VStack(spacing: 0) {
+                LoginField(title: "Host", placeholder: "127.0.0.1", text: $host)
+                    .focused($focusedField, equals: .host)
+                    .onSubmit {
+                        focusedField = .username
+                    }
+                LoginField(title: "Port", placeholder: "Optional", text: $port)
+                    .focused($focusedField, equals: .port)
+                    .onSubmit {
+                        focusedField = .username
+                    }
+                    .keyboardType(.decimalPad)
+                LoginField(title: "Username", placeholder: "username", text: $username)
+                    .focused($focusedField, equals: .username)
+                    .onSubmit {
+                        focusedField = .password
+                    }
+                LoginField(title: "Password", placeholder: "password", text: $password, isSecure: true)
+                    .focused($focusedField, equals: .password)
+                    .onSubmit {
+                        login()
+                    }
+            }
+            .cornerRadius(10)
+            .background(RoundedRectangle(cornerRadius: 10).stroke(Color(white: 0.85)))
+            
             Text(errorMessage)
-                .font(.body)
+                .font(.callout)
                 .foregroundColor(.red)
                 .frame(minHeight: 30)
             
@@ -63,7 +79,10 @@ struct LoginView: View {
         errorMessage.removeAll()
         isLoading = true
         Task {
-            let result = await manager.login(username: username, password: password)
+            let result = await manager.login(
+                host: host, port: Int(port),
+                username: username, password: password
+            )
             switch result {
             case .success:
                 return
@@ -75,20 +94,42 @@ struct LoginView: View {
     }
 }
 
-private extension View {
-    func loginFieldStyle() -> some View {
-        self.font(.body)
-            .padding(12)
-            .background(Color(white: 0.95))
-            .cornerRadius(5)
-            .frame(maxWidth: .infinity, maxHeight: 40)
+struct LoginField: View {
+    @Binding var text: String
+    var title: String
+    var placeholder: String
+    var isSecure: Bool
+    
+    init(title: String, placeholder: String, text: Binding<String>, isSecure: Bool = false) {
+        self.title = title
+        self._text = text
+        self.placeholder = placeholder
+        self.isSecure = isSecure
+    }
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.system(size: 15, weight: .semibold))
+                .frame(width: 80, alignment: .leading)
+            Group {
+                if isSecure {
+                    SecureField(placeholder, text: $text)
+                } else {
+                    TextField(placeholder, text: $text)
+                        .disableAutocorrection(true)
+                        .textInputAutocapitalization(.never)
+                }
+            }
+            .font(.system(size: 15))
+        }
+        .padding()
+        .background(Rectangle().stroke(Color(white: 0.85)))
     }
 }
 
-//struct ContentView_Previews: PreviewProvider {
-//    static var previews: some View {
-//        LoginView()
-//    }
-//}
-
-
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        LoginView()
+    }
+}

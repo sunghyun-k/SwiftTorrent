@@ -30,7 +30,12 @@ class QBFetcher {
 extension QBFetcher: LoginTokenFetcherProtocol {
     
     // MARK: - Auth
-    func loginToken(username: String, password: String) async -> Result<String, LoginError> {
+    func loginToken(
+        host: String, port: Int?,
+        username: String, password: String
+    ) async -> Result<String, LoginError> {
+        self.host = host
+        self.port = port
         guard let url = makeLoginComponents(username: username, password: password).url else {
             return .failure(.network(description: "Cannot create url."))
         }

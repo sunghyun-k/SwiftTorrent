@@ -11,7 +11,7 @@ struct LoginView: View {
     @EnvironmentObject var manager: TorrentManager
     
     @State var host: String = ""
-    @State var port: String = ""
+    @State var port: String = "8080"
     @State var username: String = ""
     @State var password: String = ""
     
@@ -31,7 +31,7 @@ struct LoginView: View {
                 LoginField(title: "Host", placeholder: "127.0.0.1", text: $host)
                     .focused($focusedField, equals: .host)
                     .onSubmit {
-                        focusedField = .username
+                        focusedField = .port
                     }
                 LoginField(title: "Port", placeholder: "Optional", text: $port)
                     .focused($focusedField, equals: .port)
@@ -73,6 +73,16 @@ struct LoginView: View {
         }
         .padding()
         .interactiveDismissDisabled()
+        .task {
+            if let info = manager.loadLoginInfo() {
+                self.host = info.host
+                if let port = info.port {
+                    self.port = "\(port)"
+                }
+                self.username = info.username
+                self.password = info.password
+            }
+        }
     }
     
     private func login() {

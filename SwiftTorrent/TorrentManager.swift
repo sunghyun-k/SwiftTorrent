@@ -29,6 +29,7 @@ class TorrentManager: ObservableObject {
     
     struct UserDefaultsKeys {
         static let loginToken = "loginToken"
+        static let loginInfo = "loginInfo"
     }
     
     private let fetcher: TorrentFetcherProtocol
@@ -58,9 +59,11 @@ class TorrentManager: ObservableObject {
         )
         switch result {
         case .success(let token):
+            saveLoginInfo(LoginInfo(host: host, port: port, username: username, password: password))
             self.loginToken = token
             return .success
         case .failure(let error):
+            removeLoginInfo()
             return .failure(error)
         }
     }
@@ -72,6 +75,35 @@ class TorrentManager: ObservableObject {
         fetcher.loginFetcher().logout(loginToken: token)
         loginToken = nil
         torrents = []
+    }
+    
+    private func saveLoginInfo(_ info: LoginInfo) {
+        let data: Data
+        do {
+            data = try PropertyListEncoder().encode(info)
+        } catch let error {
+            print(error)
+            return
+        }
+        UserDefaults.standard.set(data, forKey: UserDefaultsKeys.loginInfo)
+        UserDefaults.standard.synchronize()
+    }
+    
+    private func removeLoginInfo() {
+        UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.loginInfo)
+        UserDefaults.standard.synchronize()
+    }
+    
+    func loadLoginInfo() -> LoginInfo? {
+        guard let data = UserDefaults.standard.value(forKey: UserDefaultsKeys.loginInfo) as? Data else {
+            return nil
+        }
+        do {
+            return try PropertyListDecoder().decode(LoginInfo.self, from: data)
+        } catch let error {
+            print(error)
+            return nil
+        }
     }
     
     private func loadLoginToken() {

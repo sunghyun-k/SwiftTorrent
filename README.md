@@ -46,7 +46,7 @@ File Importer(Document Picker)를 사용한 파일 불러오기
 
 ![url_scheme](images/url_scheme.png)
 
-![file_extension](../../Desktop/file_extension.gif)
+![file_extension](images/file_extension.png)
 
 ### Sort by Options
 

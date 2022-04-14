@@ -11,7 +11,7 @@ struct TorrentRow: View {
     @EnvironmentObject var manager: TorrentManager
     var torrent: Torrent
     
-    var isEditing: Bool = false
+    @Binding var isEditing: Bool
     
     var body: some View {
         HStack {

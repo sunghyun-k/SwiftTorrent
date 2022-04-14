@@ -43,12 +43,10 @@ struct TorrentList: View {
         NavigationView {
             List(selection: $selection) {
                 ForEach(sortedTorrents) { torrent in
-                    NavigationLink {
-                        TorrentRow(torrent: torrent)
-                        
-                    } label: {
-                        TorrentRow(torrent: torrent, isEditing: true)
-                    }
+                    TorrentRow(torrent: torrent, isEditing: .init(
+                        get: { editMode == .active },
+                        set: { _ in }
+                    ))
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button {
                             manager.deleteTorrents([torrent].map { $0.id })

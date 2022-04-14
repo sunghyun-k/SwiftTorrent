@@ -24,8 +24,6 @@
 		F2B954D927FEB4DE00173D7C /* TorrentFetchProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B954D827FEB4DE00173D7C /* TorrentFetchProtocol.swift */; };
 		F2B954E127FEF64500173D7C /* TorrentList.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B954E027FEF64500173D7C /* TorrentList.swift */; };
 		F2B954E327FEF8DB00173D7C /* TorrentRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B954E227FEF8DB00173D7C /* TorrentRow.swift */; };
-		F2B954E527FEF94000173D7C /* torrentList.json in Sources */ = {isa = PBXBuildFile; fileRef = F2B954E427FEF94000173D7C /* torrentList.json */; };
-		F2B954E727FEFBDB00173D7C /* Samples.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2B954E627FEFBDB00173D7C /* Samples.swift */; };
 		F2ED79AA2800435B008B7B1E /* Int+ByteFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2ED79A92800435B008B7B1E /* Int+ByteFormatter.swift */; };
 /* End PBXBuildFile section */
 
@@ -49,8 +47,6 @@
 		F2B954D827FEB4DE00173D7C /* TorrentFetchProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentFetchProtocol.swift; sourceTree = "<group>"; };
 		F2B954E027FEF64500173D7C /* TorrentList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentList.swift; sourceTree = "<group>"; };
 		F2B954E227FEF8DB00173D7C /* TorrentRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TorrentRow.swift; sourceTree = "<group>"; };
-		F2B954E427FEF94000173D7C /* torrentList.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = torrentList.json; sourceTree = "<group>"; };
-		F2B954E627FEFBDB00173D7C /* Samples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Samples.swift; sourceTree = "<group>"; };
 		F2ED79A92800435B008B7B1E /* Int+ByteFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+ByteFormatter.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -116,8 +112,6 @@
 			children = (
 				F2B954D027FDCFCC00173D7C /* QBFetcher.swift */,
 				F2B954D627FEB2DC00173D7C /* QBTorrent.swift */,
-				F2B954E627FEFBDB00173D7C /* Samples.swift */,
-				F2B954E427FEF94000173D7C /* torrentList.json */,
 			);
 			path = QBittorrent;
 			sourceTree = "<group>";
@@ -208,9 +202,7 @@
 				F22E00FD2801B26000EAA82C /* Torrent.swift in Sources */,
 				F2B954E327FEF8DB00173D7C /* TorrentRow.swift in Sources */,
 				F292A10D28042F6100DEDBDA /* Sequence+Sort.swift in Sources */,
-				F2B954E527FEF94000173D7C /* torrentList.json in Sources */,
 				F2B954D727FEB2DC00173D7C /* QBTorrent.swift in Sources */,
-				F2B954E727FEFBDB00173D7C /* Samples.swift in Sources */,
 				F236A8C728080BE0003A9728 /* LoginInfo.swift in Sources */,
 				F28E2B63280522720033BCED /* Data+String.swift in Sources */,
 				F2B954C527FDCEBC00173D7C /* LoginView.swift in Sources */,

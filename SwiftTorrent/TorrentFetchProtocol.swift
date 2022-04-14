@@ -34,6 +34,17 @@ enum LoginError: Error {
     case network(description: String)
     case parsing(description: String)
     case custom(description: String)
+    
+    var localizedDescription: String {
+        switch self {
+        case .network(let description):
+            return description
+        case .parsing(let description):
+            return description
+        case .custom(let description):
+            return description
+        }
+    }
 }
 protocol LoginTokenFetcherProtocol: AnyObject {
     func loginToken(

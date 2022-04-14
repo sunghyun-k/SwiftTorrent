@@ -17,6 +17,7 @@ class QBFetcher {
     init() {
         let config = URLSessionConfiguration.default
         config.httpCookieAcceptPolicy = .never
+        config.timeoutIntervalForRequest = 3
         self.session = URLSession(configuration: config)
     }
 }

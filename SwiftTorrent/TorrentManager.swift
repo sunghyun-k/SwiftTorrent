@@ -16,11 +16,28 @@ class TorrentManager: ObservableObject {
             if loginToken == nil {
                 cancellable?.cancel()
                 cancellable = nil
+                UserDefaults.standard.removeObject(forKey: UserDefaultsKeys.loginToken)
+                UserDefaults.standard.synchronize()
             } else {
                 fetchTorrents()
                 cancellable = timer.connect()
+                UserDefaults.standard.set(loginToken, forKey: UserDefaultsKeys.loginToken)
+                UserDefaults.standard.synchronize()
             }
         }
+    }
+    
+    struct UserDefaultsKeys {
+        static let loginToken = "loginToken"
+    }
+    
+    var host: String {
+        get { fetcher.host }
+        set { fetcher.host = newValue }
+    }
+    var port: Int? {
+        get { fetcher.port }
+        set { fetcher.port = newValue }
     }
     
     private let fetcher: TorrentFetcherProtocol
@@ -36,10 +53,8 @@ class TorrentManager: ObservableObject {
             self.fetchTorrents()
         }
         .store(in: &disposables)
-    }
-    
-    func loginFetcher() -> LoginTokenFetcherProtocol {
-        fetcher.loginFetcher()
+        
+        loadLoginToken()
     }
     
     func login(username: String, password: String) async -> VoidResult<LoginError> {
@@ -53,8 +68,17 @@ class TorrentManager: ObservableObject {
         }
     }
     
-    func loadStoredLoginToken() {
-        
+    func logout() {
+        guard let token = loginToken else {
+            return
+        }
+        fetcher.loginFetcher().logout(loginToken: token)
+        loginToken = nil
+        torrents = []
+    }
+    
+    private func loadLoginToken() {
+        self.loginToken = UserDefaults.standard.string(forKey: UserDefaultsKeys.loginToken)
     }
     
     func fetchTorrents() {

@@ -40,6 +40,7 @@ protocol LoginTokenFetcherProtocol: AnyObject {
         username: String,
         password: String
     ) async -> Result<String, LoginError>
+    func logout(loginToken: String)
 }
 
 enum VoidResult<Failure> where Failure: Error {

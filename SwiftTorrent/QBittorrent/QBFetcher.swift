@@ -61,6 +61,20 @@ extension QBFetcher: LoginTokenFetcherProtocol {
         }
         return .success(sidString[1])
     }
+    
+    func logout(loginToken: String) {
+        guard let url = makeLogoutComponents().url else {
+            print("Cannot create logout url.")
+            return
+        }
+        Task {
+            do {
+                _ = try await getData(from: url, loginToken)
+            } catch let error {
+                print(error)
+            }
+        }
+    }
 }
 
 extension QBFetcher: TorrentFetcherProtocol {
@@ -246,6 +260,7 @@ private extension QBFetcher {
         struct Auth {
             private static let apiName = Components.api + "/auth"
             static let login = apiName + "/login"
+            static let logout = apiName + "/logout"
         }
         struct Torrents {
             private static let apiName = Components.api + "/torrents"
@@ -268,6 +283,14 @@ private extension QBFetcher {
             .init(name: "username", value: username),
             .init(name: "password", value: password)
         ]
+        return components
+    }
+    func makeLogoutComponents() -> URLComponents {
+        var components = URLComponents()
+        components.scheme = Components.scheme
+        components.host = host
+        components.port = port
+        components.path = Components.Auth.logout
         return components
     }
     // MARK: - Torrents

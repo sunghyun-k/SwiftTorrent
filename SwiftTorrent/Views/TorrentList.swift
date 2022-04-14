@@ -93,9 +93,9 @@ struct TorrentList: View {
                             
                             Divider()
                             Button {
-                                print("settings")
+                                manager.logout()
                             } label: {
-                                Label("Settings", systemImage: "gear")
+                                Label("Logout", systemImage: "rectangle.portrait.and.arrow.right")
                             }
                             
                         } label: {
@@ -158,7 +158,7 @@ struct TorrentList: View {
                 manager.addTorrents([text])
             }
         }
-        .sheet(isPresented: .init(
+        .fullScreenCover(isPresented: .init(
             get: { manager.loginToken == nil },
             set: { _ in }
         )) {

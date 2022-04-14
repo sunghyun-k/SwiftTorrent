@@ -56,6 +56,7 @@ struct LoginView: View {
             Spacer()
         }
         .padding()
+        .interactiveDismissDisabled()
     }
     
     private func login() {

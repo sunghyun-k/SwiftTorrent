@@ -12,15 +12,6 @@ struct SwiftTorrentApp: App {
     @StateObject private var manager: TorrentManager = {
         let fetcher = QBFetcher(host: "192.168.1.162", port: 8080)
         let manager = TorrentManager(fetcher: fetcher)
-        Task {
-            let result = await fetcher.loginToken(username: "brm0821", password: "ksh980821")
-            switch result {
-            case .success(let token):
-                manager.loginToken = token
-            default:
-                break
-            }
-        }
         return manager
     }()
     var body: some Scene {
